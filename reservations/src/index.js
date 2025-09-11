@@ -1,15 +1,13 @@
 const express = require('express');
 const morgan = require('morgan');
-const cors = require('cors');
 const reservationsController = require('./controllers/reservationsController');
 
 const app = express();
 
 app.use(morgan('dev'));
 app.use(express.json());
-app.use(cors());
 
-app.use('/reservations', reservationsController);
+app.use(reservationsController);
 
 
 app.listen(3003, () => {

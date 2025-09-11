@@ -1,10 +1,10 @@
 const mysql = require('mysql2/promise');
 
-const conection = mysql.conection({
+const conection = mysql.createPool({
   host: 'localhost',
-  user: 'root',
+  user: 'hotel_app',
   password: '5123',
-  database: 'reservas'
+  database: 'project_hotelVacaBonita'
 });
 
 async function getReservations() {
