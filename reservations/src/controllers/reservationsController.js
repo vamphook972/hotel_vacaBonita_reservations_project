@@ -41,13 +41,14 @@ async function verifyRoomById(id_room) {
     const room = roomResponse.data;
 
     if (!room || room.id != id_room) {
-        return false;
+        return { available: false, reason: 'Habitacion no existe' };
     }
 
     if (room.estado === 'ocupada') {
-        return false;
+        return { available: false, reason: 'Habitacion ya esta ocupada' };
     }
-    return true;
+    
+    return { available: true, reason: null };
 }
 
 async function verifyDisponibility(id_room, start_date, end_date) {
@@ -134,8 +135,8 @@ router.post('/reservations', async (req, res) => {
     }
 
     const verifyRoom = await verifyRoomById(id_room);
-    if (!verifyRoom) {
-        return res.json({error: 'Habitacion no existente o ocupada, reserva no creada'});
+    if (!verifyRoom.available) {
+        return res.json({error: verifyRoom.reason});
     }
 
     const disponibility = await verifyDisponibility(id_room, start_date, end_date);
