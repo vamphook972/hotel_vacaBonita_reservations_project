@@ -51,6 +51,18 @@ async function verifyRoomById(id_room) {
 }
 
 async function verifyDisponibility(id_room, start_date, end_date) {
+    // First verify that start date is not in the past
+    const today = new Date();
+    const startDate = new Date(start_date);
+    
+    // Set time to start of day for comparison
+    today.setHours(0, 0, 0, 0);
+    startDate.setHours(0, 0, 0, 0);
+    
+    if (startDate < today) {
+        return { available: false, reason: 'No se puede hacer una reserva con fecha de inicio en el pasado' };
+    }
+
     const roomResponse = await axios.get(`http://localhost:3005/habitaciones/${id_room}`);
     const room = roomResponse.data;
 
@@ -65,11 +77,11 @@ async function verifyDisponibility(id_room, start_date, end_date) {
             (start_date <= reservation.end_date) &&
             (end_date >= reservation.start_date)
         ) {
-            return false;
+            return { available: false, reason: 'Habitacion no disponible en ese horario de reserva' };
         }
     }
 
-    return true;
+    return { available: true, reason: null };
 }
 
 async function verifyOcupantsInRoom(id_room, occupants_number) {
@@ -82,6 +94,7 @@ async function verifyOcupantsInRoom(id_room, occupants_number) {
         return false;
     }
 }
+
 
 async function extractHotel(id_room) {
     const roomResponse = await axios.get(`http://localhost:3005/habitaciones/${id_room}`);
@@ -126,8 +139,8 @@ router.post('/reservations', async (req, res) => {
     }
 
     const disponibility = await verifyDisponibility(id_room, start_date, end_date);
-    if (!disponibility) {
-        return res.json({error: 'Habitacion no disponible en ese horario de reserva'});
+    if (!disponibility.available) {
+        return res.json({error: disponibility.reason});
     }
 
     const id_hotel = await extractHotel(id_room);
