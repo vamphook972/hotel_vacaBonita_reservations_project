@@ -40,14 +40,15 @@ async function verifyRoomById(id_room) {
     const roomResponse = await axios.get(`http://localhost:3005/habitaciones/${id_room}`);
     const room = roomResponse.data;
 
-    if (!room || room.id != id_room) {
-        return false;
+    if (!room) {
+        return { available: false, reason: 'Habitacion no existe' };
     }
 
     if (room.estado === 'ocupada') {
-        return false;
+        return { available: false, reason: 'Habitacion ya esta ocupada' };
     }
-    return true;
+    
+    return { available: true, reason: null };
 }
 
 async function verifyDisponibility(id_room, start_date, end_date) {
@@ -111,11 +112,21 @@ async function updateStateRoom(id_room) {
 }
 
 // calculate cost
-async function calculateCost() {
+async function calculateCost(id_room, start_date, end_date) {
     const roomResponse = await axios.get(`http://localhost:3005/habitaciones/${id_room}`);
     const room = roomResponse.data;
 
-    return room.costo_habitacion;
+    // Calculate number of nights
+    const startDate = new Date(start_date);
+    const endDate = new Date(end_date);
+    const timeDiff = endDate.getTime() - startDate.getTime();
+    const nights = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+    // Calculate total cost
+    const costPerNight = room.costo_habitacion;
+    const totalCost = costPerNight * nights;
+
+    return totalCost;
 }
 
 
@@ -134,8 +145,8 @@ router.post('/reservations', async (req, res) => {
     }
 
     const verifyRoom = await verifyRoomById(id_room);
-    if (!verifyRoom) {
-        return res.json({error: 'Habitacion no existente o ocupada, reserva no creada'});
+    if (!verifyRoom.available) {
+        return res.json({error: verifyRoom.reason});
     }
 
     const disponibility = await verifyDisponibility(id_room, start_date, end_date);
@@ -152,7 +163,7 @@ router.post('/reservations', async (req, res) => {
 
     const stateRoom = await updateStateRoom(id_room)
     
-    const cost = await calculateCost();
+    const cost = await calculateCost(id_room, start_date, end_date);
 
     // create reservation
     const reservation = {
@@ -165,7 +176,7 @@ router.post('/reservations', async (req, res) => {
         'state': state,
         'cost': cost
     };
-    const reservationRes = await reservationsModel.createReservation()
+    const reservationRes = await reservationsModel.createReservation(reservation)
 
     return res.send("reserva creada exitosamente");
 
