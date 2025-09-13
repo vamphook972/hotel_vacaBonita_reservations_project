@@ -1,10 +1,12 @@
+// dotnev for the data base conection
+require('dotenv').config();
 const mysql = require('mysql2/promise');
 
 const conection = mysql.createPool({
-  host: 'localhost',
-  user: 'hotel_app',
-  password: '5123',
-  database: 'project_hotelVacaBonita'
+  host: process.env.DB_HOST_RESERVATIONS,
+  user: process.env.DB_USER_RESERVATIONS,
+  password: process.env.DB_PASSWORD_RESERVATIONS,
+  database: process.env.DB_NAME_RESERVATIONS
 });
 
 async function getReservations() {
