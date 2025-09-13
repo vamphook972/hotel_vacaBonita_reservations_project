@@ -1,28 +1,29 @@
+require('dotenv').config();
 const mysql = require('mysql2/promise');
 
-const connection = mysql.createPool({
-    host: 'localhost',
-    user: 'root',
-    password: 'Paquita1234',
-    database: 'hotelHabitaciones'
+const conection = mysql.createPool({
+  host: process.env.DB_HOST_ROOMS,
+  user: process.env.DB_USER_ROOMS,
+  password: process.env.DB_PASSWORD_ROOMS,
+  database: process.env.DB_NAME_ROOMS
 });
 
 async function traerHabitaciones() {
-    const result = await connection.query('SELECT * FROM habitaciones');
+    const result = await conection.query('SELECT * FROM habitaciones');
     return result[0];
 }
 async function traerHabitacion(id_habitacion) {
-    const result = await connection.query('SELECT * FROM habitaciones WHERE id_habitacion = ?', id_habitacion);
+    const result = await conection.query('SELECT * FROM habitaciones WHERE id_habitacion = ?', id_habitacion);
     return result[0];
 }
 
 async function traerHabitacionHotel(id_hotel) {
-    const result = await connection.query('SELECT * FROM habitaciones WHERE id_hotel = ?', id_hotel);
+    const result = await conection.query('SELECT * FROM habitaciones WHERE id_hotel = ?', id_hotel);
     return result[0];
 }
 
 async function traerHabitacionEstado(estado) {
-    const result = await connection.query('SELECT * FROM habitaciones WHERE estado = ?', estado);
+    const result = await conection.query('SELECT * FROM habitaciones WHERE estado = ?', estado);
     return result[0];
 }
 
@@ -38,7 +39,7 @@ async function crearHabitacion(tipo_habitacion, numero_ocupantes, costo_habitaci
     }
 
      // Verificar si ya existe la habitación en ese hotel
-    const [rows] = await connection.query(
+    const [rows] = await conection.query(
         'SELECT * FROM habitaciones WHERE numero_habitacion = ? AND id_hotel = ?',
         [numero_habitacion, id_hotel]
     );
@@ -47,19 +48,19 @@ async function crearHabitacion(tipo_habitacion, numero_ocupantes, costo_habitaci
         throw new Error('Ya existe una habitación con ese número en este hotel');
     }
     //SI NO EXISTE:INSERTAR HABITACION
-    const result = await connection.query(
+    const result = await conection.query(
   'INSERT INTO habitaciones (tipo_habitacion, estado, numero_ocupantes, costo_habitacion, numero_habitacion, id_hotel) VALUES (?,?,?,?,?,?)',
   [tipo_habitacion, 'libre', numero_ocupantes, costo_habitacion, numero_habitacion, id_hotel]);
     return result;
 }
 
 async function actualizarHabitacion(id_habitacion, estado) {
-    const result = await connection.query('UPDATE habitaciones SET estado = ? WHERE id_habitacion = ?', [estado, id_habitacion]);
+    const result = await conection.query('UPDATE habitaciones SET estado = ? WHERE id_habitacion = ?', [estado, id_habitacion]);
     return result;
 }
 
 async function eliminarHabitacion(id_habitacion) {
-    const result = await connection.query('DELETE FROM habitaciones WHERE id_habitacion = ?', [id_habitacion]);
+    const result = await conection.query('DELETE FROM habitaciones WHERE id_habitacion = ?', [id_habitacion]);
     return result;
 }
 
