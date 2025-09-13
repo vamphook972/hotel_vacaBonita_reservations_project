@@ -1,6 +1,8 @@
+require('dotenv').config();
+const mysql = require('mysql2/promise');
 const express = require('express');
 const app = express();
-const hotelesController = require('./src/controllers/hotelesController'); 
+const hotelesController = require("./controllers/hotelesController");
 app.use(express.json());
 app.use('/', hotelesController);
 

@@ -1,23 +1,23 @@
+require('dotenv').config();
 const mysql = require('mysql2/promise');
 const axios = require('axios');
 
-const connection = mysql.createPool({
-  host: 'localhost',
-  user: 'root',
-  password: 'salo',
-  database: 'hoteles',
-  port: 3306
+const conection = mysql.createPool({
+  host: process.env.DB_HOST_HOTELS,
+  user: process.env.DB_USER_HOTELS,
+  password: process.env.DB_PASSWORD_HOTELS,
+  database: process.env.DB_NAME_HOTELS
 });
 
 // Consultar todos los hoteles
 async function traerHoteles() {
-  const [rows] = await connection.query('SELECT * FROM hoteles');
+  const [rows] = await conection.query('SELECT * FROM hoteles');
   return rows;
 }
 
 // Consultar un hotel por id
 async function traerHotel(id) {
-  const [rows] = await connection.query('SELECT * FROM hoteles WHERE id = ?', [id]);
+  const [rows] = await conection.query('SELECT * FROM hoteles WHERE id = ?', [id]);
   return rows[0];
 }
 
@@ -67,7 +67,7 @@ async function crearHotel(hotel) {
     cantidad_habitaciones
   } = hotel;
 
-  const [result] = await connection.query(
+  const [result] = await conection.query(
     `INSERT INTO hoteles 
      (usuario, nombre_hotel, pais, ciudad)
      VALUES (?, ?, ?, ?)`,
@@ -85,7 +85,7 @@ async function crearHotel(hotel) {
 async function actualizarHotel(id, hotel) {
   const { usuario, nombre_hotel, pais, ciudad } = hotel;
 
-  const [result] = await connection.query(
+  const [result] = await conection.query(
     `UPDATE hoteles SET
      usuario = ?, nombre_hotel = ?, pais = ?, ciudad = ?
      WHERE id = ?`,
@@ -97,7 +97,7 @@ async function actualizarHotel(id, hotel) {
 
 // Borrar hotel por id
 async function borrarHotel(id) {
-  const [result] = await connection.query('DELETE FROM hoteles WHERE id = ?', [id]);
+  const [result] = await conection.query('DELETE FROM hoteles WHERE id = ?', [id]);
   return result;
 }
 
