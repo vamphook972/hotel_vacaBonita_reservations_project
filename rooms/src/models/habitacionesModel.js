@@ -29,7 +29,10 @@ async function traerHabitacionEstado(estado) {
 
 
 async function crearHabitacion(tipo_habitacion, numero_ocupantes, costo_habitacion, numero_habitacion, id_hotel ) {
-
+    //Validar que no falten datos obligatorios
+    if (!tipo_habitacion || !numero_ocupantes || !costo_habitacion || !numero_habitacion || !id_hotel) {
+        throw new Error('Faltan datos obligatorios para crear la habitación');
+    }
     // Validar que numero_ocupantes y costo_habitacion sean positivos
     if (numero_ocupantes <= 0) {
         throw new Error('El número de ocupantes debe ser mayor a 0');
@@ -51,6 +54,7 @@ async function crearHabitacion(tipo_habitacion, numero_ocupantes, costo_habitaci
     const result = await conection.query(
   'INSERT INTO habitaciones (tipo_habitacion, estado, numero_ocupantes, costo_habitacion, numero_habitacion, id_hotel) VALUES (?,?,?,?,?,?)',
   [tipo_habitacion, 'libre', numero_ocupantes, costo_habitacion, numero_habitacion, id_hotel]);
+    console.log(`Habitación ${numero_habitacion} insertada en hotel ${id_hotel}`);
     return result;
 }
 
@@ -67,3 +71,4 @@ async function eliminarHabitacion(id_habitacion) {
 module.exports = {
     traerHabitaciones, traerHabitacion, crearHabitacion, actualizarHabitacion,eliminarHabitacion, traerHabitacionHotel, traerHabitacionEstado
 };
+
