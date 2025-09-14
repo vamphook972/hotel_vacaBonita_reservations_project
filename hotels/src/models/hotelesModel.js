@@ -21,51 +21,9 @@ async function traerHotel(id) {
   return rows[0];
 }
 
-// Crear habitaciones base con precios y cantidades 
-async function crearHabitacionesBase(id_hotel, costo_habitacion, cantidad_habitaciones) {
-  const configuracion = {
-    estandar: { numero_ocupantes: 2, base: 100 },
-    deluxe:   { numero_ocupantes: 3, base: 200 },
-    suite:    { numero_ocupantes: 4, base: 300 }
-  };
-
-  for (const tipo in costo_habitacion) {
-    const cantidad = cantidad_habitaciones[tipo] || 0;
-    const { numero_ocupantes, base } = configuracion[tipo];
-
-    for (let i = 0; i < cantidad; i++) {
-      const numero_habitacion = base + i + 1;
-
-      const habitacion = {
-        tipo_habitacion: tipo,
-        estado: 'libre',
-        numero_ocupantes,
-        costo_habitacion: costo_habitacion[tipo],
-        numero_habitacion,
-        id_hotel
-      };
-
-      try {
-        await axios.post('http://localhost:3005/habitaciones', habitacion);
-      }  catch (error) {
-  console.error(`❌ Error al crear habitación ${tipo} ${numero_habitacion}:`, error.response?.data || error.message);
-  throw error; 
-}
-
-    }
-  }
-}
-
-// Crear un nuevo hotel y sus habitaciones base
+// Crear un nuevo hotel (sin habitaciones)
 async function crearHotel(hotel) {
-  const {
-    usuario,
-    nombre_hotel,
-    pais,
-    ciudad,
-    costo_habitacion,
-    cantidad_habitaciones
-  } = hotel;
+  const { usuario, nombre_hotel, pais, ciudad } = hotel;
 
   const [result] = await conection.query(
     `INSERT INTO hoteles 
@@ -74,11 +32,7 @@ async function crearHotel(hotel) {
     [usuario, nombre_hotel, pais, ciudad]
   );
 
-  const id_hotel = result.insertId;
-
-  await crearHabitacionesBase(id_hotel, costo_habitacion, cantidad_habitaciones);
-
-  return id_hotel;
+  return result.insertId;
 }
 
 // Actualizar hotel por id
