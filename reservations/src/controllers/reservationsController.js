@@ -89,7 +89,7 @@ router.post('/reservations', async (req, res) => {
         }
 
         // Update room state to occupied
-        const stateRoom = await updateStateRoom(id_room)
+        const stateRoom = await updateStateRoom(id_room, 'ocupada')
         
         // Calculate total cost based on room price and duration
         const cost = await calculateCost(id_room, start_date, end_date);
@@ -244,16 +244,50 @@ async function extractHotel(id_room) {
 
 
 // Updates room state to occupied
-async function updateStateRoom(id_room) {
+async function updateStateRoom(id_room, state){
     try {
         // Update room state to occupied via API call
         const roomResponse = await axios.put(`http://localhost:3005/habitaciones/${id_room}`, {
-            estado: 'ocupada'
+            estado: state
         });
         return roomResponse;
     } catch (error) {
         console.error('Error al actualizar estado de habitacion:', error);
         throw new Error('Error al actualizar estado de la habitacion');
+    }
+}
+
+// funtion to free room, necesary in other funtions
+async function freeRoom(id_room) {
+    try {
+        await axios.put(`http://localhost:3005/habitaciones/${id_room}`, {
+            estado: 'disponible'
+        });
+    } catch (error) {
+        console.error('Error al liberar la habitación:', error);
+    }
+}
+
+// check for expired reservations and free room
+async function checkExpiredReservations() {
+    try {
+        const reservas = await reservationsModel.getReservations();
+        const now = new Date();
+
+        for (let reserva of reservas) {
+            const endDate = new Date(reserva.end_date);
+
+            if (endDate < now && reserva.state !== 'finished') {
+                // update room status
+                await reservationsModel.updateReservationState(reserva.id_reservation, 'finished')
+
+                await freeRoom(reserva.id_room, 'libre')
+
+                console.log(`Reserva ${reserva.id_reservation} finalizada, habitación liberada.`);
+            }
+        }
+    } catch (error) {
+        console.error('Error al verificar reservas expiradas:', error);
     }
 }
 
