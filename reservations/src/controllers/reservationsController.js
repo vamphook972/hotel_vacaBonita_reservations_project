@@ -89,7 +89,7 @@ router.post('/reservations', async (req, res) => {
         }
 
         // Update room state to occupied
-        const stateRoom = await updateStateRoom(id_room, 'ocupada')
+        await updateStateRoom(id_room, 'ocupada')
         
         // Calculate total cost based on room price and duration
         const cost = await calculateCost(id_room, start_date, end_date);
@@ -250,23 +250,12 @@ async function updateStateRoom(id_room, state){
         const roomResponse = await axios.put(`http://localhost:3005/habitaciones/${id_room}`, {
             estado: state
         });
-        return roomResponse;
     } catch (error) {
         console.error('Error al actualizar estado de habitacion:', error);
         throw new Error('Error al actualizar estado de la habitacion');
     }
 }
 
-// funtion to free room, necesary in other funtions
-async function freeRoom(id_room) {
-    try {
-        await axios.put(`http://localhost:3005/habitaciones/${id_room}`, {
-            estado: 'disponible'
-        });
-    } catch (error) {
-        console.error('Error al liberar la habitación:', error);
-    }
-}
 
 // check for expired reservations and free room
 async function checkExpiredReservations() {
@@ -281,7 +270,7 @@ async function checkExpiredReservations() {
                 // update room status
                 await reservationsModel.updateReservationState(reserva.id_reservation, 'finished')
 
-                await freeRoom(reserva.id_room, 'libre')
+                await updateReservationState(reserva.id_room, 'libre')
 
                 console.log(`Reserva ${reserva.id_reservation} finalizada, habitación liberada.`);
             }
