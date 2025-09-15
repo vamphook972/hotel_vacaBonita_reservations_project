@@ -36,9 +36,10 @@ async function createReservation(reservation) {
   const cost = reservation.cost;
 
   
-  const result = await conection.query('INSERT INTO reservations (user, id_hotel, occupants_number, id_room, start_date, end_date, cost, state) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [user, id_hotel, occupants_number, id_room, start_date, end_date, state, cost]);
+  const result = await conection.query('INSERT INTO reservations (user, id_hotel, occupants_number, id_room, start_date, end_date, state, cost) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [user, id_hotel, occupants_number, id_room, start_date, end_date, state, cost]);
   return result;
 }
+
 
 module.exports = {
   getReservations,
