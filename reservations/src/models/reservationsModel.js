@@ -2,6 +2,7 @@
 require('dotenv').config();
 const mysql = require('mysql2/promise');
 
+// configure conection with .env file
 const conection = mysql.createPool({
   host: process.env.DB_HOST_RESERVATIONS,
   user: process.env.DB_USER_RESERVATIONS,
