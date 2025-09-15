@@ -16,7 +16,12 @@ async function getReservations() {
 }
 
 async function getReservationById(id) {
-  const result = await conection.query('SELECT * FROM reservations WHERE id = ?', id);
+  const result = await conection.query('SELECT * FROM reservations WHERE id = ?', [id]);
+  return result[0];
+}
+
+async function updateReservationState(id, state) {
+  const result = await conection.query('UPDATE reservations SET state = ? WHERE id = ?', [state, id]);
   return result[0];
 }
 
@@ -38,5 +43,6 @@ async function createReservation(reservation) {
 module.exports = {
   getReservations,
   getReservationById,
-  createReservation
+  createReservation,
+  updateReservationState
 };

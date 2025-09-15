@@ -267,12 +267,13 @@ async function checkExpiredReservations() {
             const endDate = new Date(reserva.end_date);
 
             if (endDate < now && reserva.state !== 'finished') {
-                // update room status
-                await reservationsModel.updateReservationState(reserva.id_reservation, 'finished')
+                // Mark reservation as finished
+                await reservationsModel.updateReservationState(reserva.id, 'finished');
 
-                await updateReservationState(reserva.id_room, 'libre')
+                // Free the room setting it to disponible
+                await updateStateRoom(reserva.id_room, 'libre')
 
-                console.log(`Reserva ${reserva.id_reservation} finalizada, habitación liberada.`);
+                console.log(`Reserva ${reserva.id} finalizada, habitación liberada.`);
             }
         }
     } catch (error) {
@@ -306,6 +307,9 @@ async function calculateCost(id_room, start_date, end_date) {
 
 
 
+
+// Expose maintenance job via router for use in server startup
+router.checkExpiredReservations = checkExpiredReservations;
 
 // Export the router for use in the main application
 module.exports = router;
