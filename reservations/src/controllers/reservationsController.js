@@ -116,6 +116,97 @@ router.post('/reservations', async (req, res) => {
     }
 });
 
+// PUT /reservations/:id
+// Updates reservation data; if dates or room change, cost is recalculated
+router.put('/reservations/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+
+        // Load current reservation
+        const current = await reservationsModel.getReservationById(id);
+        if (!current || current.length === 0) {
+            return res.status(404).json({ error: 'Reservacion no encontrada' });
+        }
+        const currentRes = current[0];
+
+        // Extract incoming fields
+        const {
+            occupants_number,
+            id_room,
+            start_date,
+            end_date
+        } = req.body || {};
+
+        // Disallow updating immutable fields
+        if (req.body && req.body.user !== undefined) {
+            return res.status(400).json({ error: 'No se permite actualizar el usuario de la reserva' });
+        }
+        if (req.body && req.body.state !== undefined) {
+            return res.status(400).json({ error: 'No se permite actualizar el estado de la reserva' });
+        }
+
+        // Determine final values once to avoid redundancy
+        const finalRoomId = id_room !== undefined ? id_room : currentRes.id_room;
+        const finalStartDate = start_date !== undefined ? start_date : currentRes.start_date;
+        const finalEndDate = end_date !== undefined ? end_date : currentRes.end_date;
+        
+        // Build update object progressively
+        const updates = {};
+
+        // If occupants_number changes, verify capacity
+        if (occupants_number !== undefined) {
+            const verifyOcupants = await verifyOcupantsInRoom(finalRoomId, occupants_number);
+            if (!verifyOcupants) {
+                return res.json({ error: 'Cantidad de ocupantes supera el limite permitido para esa habitacion' });
+            }
+            updates.occupants_number = occupants_number;
+        }
+
+        // If room changes, verify room exists and availability
+        if (id_room !== undefined && id_room !== currentRes.id_room) {
+            const verifyRoom = await verifyRoomById(id_room);
+            if (!verifyRoom.available) {
+                return res.json({ error: verifyRoom.reason });
+            }
+
+            const newHotelId = await extractHotel(id_room);
+            updates.id_room = id_room;
+            updates.id_hotel = newHotelId;
+        }
+
+        // If dates change, verify availability
+        if (start_date !== undefined || end_date !== undefined) {
+            const disponibility = await verifyDisponibility(finalRoomId, finalStartDate, finalEndDate);
+            if (!disponibility.available) {
+                return res.json({ error: disponibility.reason });
+            }
+            updates.start_date = finalStartDate;
+            updates.end_date = finalEndDate;
+        }
+
+        // If room or dates changed, recalculate cost
+        const roomChanged = updates.id_room !== undefined;
+        const datesChanged = updates.start_date !== undefined || updates.end_date !== undefined;
+        if (roomChanged || datesChanged) {
+            const newCost = await calculateCost(finalRoomId, finalStartDate, finalEndDate);
+            updates.cost = newCost;
+        }
+
+        // If nothing to update
+        if (Object.keys(updates).length === 0) {
+            return res.json({ message: 'No hay cambios para actualizar' });
+        }
+
+        // Perform update
+        await reservationsModel.updateReservation(id, updates);
+
+        return res.json({ message: 'Reservacion actualizada exitosamente' });
+    } catch (error) {
+        console.error('Error al actualizar reservacion:', error);
+        res.status(500).json({ error: 'Error interno del servidor al actualizar la reservacion' });
+    }
+});
+
 
 // Verifies if a user exists and is authorized to make reservations
 async function verifyUserName(userName) {

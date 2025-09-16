@@ -41,9 +41,29 @@ async function createReservation(reservation) {
 }
 
 
+async function updateReservation(id, data) {
+  const fields = [];
+  const values = [];
+
+  // user is immutable for updateReservation
+  if (data.id_hotel !== undefined) { fields.push('id_hotel = ?'); values.push(data.id_hotel); }
+  if (data.occupants_number !== undefined) { fields.push('occupants_number = ?'); values.push(data.occupants_number); }
+  if (data.id_room !== undefined) { fields.push('id_room = ?'); values.push(data.id_room); }
+  if (data.start_date !== undefined) { fields.push('start_date = ?'); values.push(data.start_date); }
+  if (data.end_date !== undefined) { fields.push('end_date = ?'); values.push(data.end_date); }
+  if (data.cost !== undefined) { fields.push('cost = ?'); values.push(data.cost); }
+  // state is immutable for updateReservation
+
+  values.push(id);
+  const sql = `UPDATE reservations SET ${fields.join(', ')} WHERE id = ?`;
+  const result = await conection.query(sql, values);
+  return result[0];
+}
+
 module.exports = {
   getReservations,
   getReservationById,
   createReservation,
-  updateReservationState
+  updateReservationState,
+  updateReservation
 };
