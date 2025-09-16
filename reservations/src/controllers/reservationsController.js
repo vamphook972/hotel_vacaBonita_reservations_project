@@ -84,8 +84,8 @@ router.post('/reservations', async (req, res) => {
         
         // Verify number of occupants doesn't exceed room capacity
         const verifyOcupants = await verifyOcupantsInRoom(id_room, occupants_number)
-        if (!verifyOcupants){
-            return res.json({error: 'Cantidad de ocupantes supera el limite permitido para esa habitacion'})
+        if (!verifyOcupants.available){
+            return res.json({error: verifyOcupants.reason})
         }
 
         // Update room state to occupied
@@ -156,8 +156,8 @@ router.put('/reservations/:id', async (req, res) => {
         // If occupants_number changes, verify capacity
         if (occupants_number !== undefined) {
             const verifyOcupants = await verifyOcupantsInRoom(finalRoomId, occupants_number);
-            if (!verifyOcupants) {
-                return res.json({ error: 'Cantidad de ocupantes supera el limite permitido para esa habitacion' });
+            if (!verifyOcupants.available) {
+                return res.json({ error: verifyOcupants.reason });
             }
             updates.occupants_number = occupants_number;
         }
@@ -302,19 +302,24 @@ async function verifyDisponibility(id_room, start_date, end_date) {
 // Verifies if the number of occupants doesn't exceed room capacity
 async function verifyOcupantsInRoom(id_room, occupants_number) {
     try {
+        // Check if occupants number is valid (greater than 0)
+        if (occupants_number <= 0) {
+            return { available: false, reason: 'El número de ocupantes debe ser mayor a 0' };
+        }
+
         // Get room information to check capacity
         const roomResponse = await axios.get(`http://localhost:3005/habitaciones/${id_room}`);
         const room = roomResponse.data;
 
         // Check if number of occupants is within room capacity
         if (occupants_number <= room.numero_ocupantes){
-            return true;
+            return { available: true, reason: null };
         } else {
-            return false;
+            return { available: false, reason: `La habitación solo permite máximo ${room.numero_ocupantes} ocupantes` };
         }
     } catch (error) {
         console.error('Error al verificar ocupantes en habitacion:', error);
-        return false;
+        return { available: false, reason: 'Error al verificar la capacidad de la habitación' };
     }
 }
 
