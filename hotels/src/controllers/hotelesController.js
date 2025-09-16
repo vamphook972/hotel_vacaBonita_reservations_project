@@ -35,6 +35,24 @@ router.get('/hoteles/:id', async (req, res) => {
   }
 });
 
+
+// Consultar un hotel por nombre
+// tuve que agregarle /nombre ya que al colocar el endpoint generaba confusion con buscar por id
+router.get('/hoteles/nombre/:nombre_hotel', async (req, res) => {
+  try {
+    const nombre_hotel = req.params.nombre_hotel;
+    const result = await hotelesModel.traerHotelNombre(nombre_hotel);
+
+    if (!result) {
+      return res.status(404).send("Hotel no encontrado");
+    }
+
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Crear un nuevo hotel con validación de rol y habitaciones
 router.post('/hoteles', async (req, res) => {
   const {
