@@ -245,6 +245,62 @@ router.put('/reservations/:id', async (req, res) => {
     }
 });
 
+// DELETE /reservations/:id
+// Deletes a specific reservation (only the owner or hotel admin can delete their reservation)
+router.delete('/reservations/:id', async (req, res) => {
+    try {
+        // Extract reservation ID from URL parameters
+        const id_reservation = req.params.id;
+        const requestingUser = req.body.user;
+
+        // Validate that user is provided
+        if (!requestingUser) {
+            return res.status(400).json({error: 'Usuario requerido para eliminar la reserva'});
+        }
+
+        // First, get the reservation to check ownership and get hotel info
+        const reservation = await reservationsModel.getReservationById(id_reservation);
+        
+        // Check if reservation exists
+        if (!reservation || reservation.length === 0) {
+            return res.status(404).json({error: 'Reservación no encontrada'});
+        }
+
+        const reservationData = reservation[0];
+        
+        // Check if the requesting user is the owner of the reservation
+        if (reservationData.user === requestingUser) {
+            // User is the owner, allow deletion
+            await reservationsModel.deleteReservation(id_reservation);
+            return res.json({message: 'Reservación eliminada exitosamente'});
+        }
+
+        // If not the owner, check if user is admin of the hotel
+        try {
+            // Get hotel information to check admin
+            const hotelResponse = await axios.get(`http://localhost:3002/hoteles/${reservationData.id_hotel}`);
+            const hotel = hotelResponse.data;
+
+            // Check if requesting user is the hotel admin
+            if (hotel && hotel.usuario === requestingUser) {
+                // User is hotel admin, allow deletion
+                await reservationsModel.deleteReservation(id_reservation);
+                return res.json({message: 'Reservación eliminada exitosamente por administrador del hotel'});
+            }
+        } catch (hotelError) {
+            console.error('Error al verificar administrador del hotel:', hotelError);
+            // Continue to permission denied if hotel verification fails
+        }
+
+        // User is neither owner nor hotel admin
+        return res.status(403).json({error: 'No tienes permisos para eliminar esta reserva'});
+        
+    } catch (error) {
+        console.error('Error al eliminar reservación:', error);
+        res.status(500).json({error: 'Error interno del servidor al eliminar la reservación'});
+    }
+});
+
 
 // Verifies if a user exists and is authorized to make reservations
 async function verifyUserName(userName) {
@@ -439,62 +495,6 @@ async function calculateCost(id_room, start_date, end_date) {
     }
 }
 
-
-// DELETE /reservations/:id
-// Deletes a specific reservation (only the owner or hotel admin can delete their reservation)
-router.delete('/reservations/:id', async (req, res) => {
-    try {
-        // Extract reservation ID from URL parameters
-        const id_reservation = req.params.id;
-        const requestingUser = req.body.user;
-
-        // Validate that user is provided
-        if (!requestingUser) {
-            return res.status(400).json({error: 'Usuario requerido para eliminar la reserva'});
-        }
-
-        // First, get the reservation to check ownership and get hotel info
-        const reservation = await reservationsModel.getReservationById(id_reservation);
-        
-        // Check if reservation exists
-        if (!reservation || reservation.length === 0) {
-            return res.status(404).json({error: 'Reservación no encontrada'});
-        }
-
-        const reservationData = reservation[0];
-        
-        // Check if the requesting user is the owner of the reservation
-        if (reservationData.user === requestingUser) {
-            // User is the owner, allow deletion
-            await reservationsModel.deleteReservation(id_reservation);
-            return res.json({message: 'Reservación eliminada exitosamente'});
-        }
-
-        // If not the owner, check if user is admin of the hotel
-        try {
-            // Get hotel information to check admin
-            const hotelResponse = await axios.get(`http://localhost:3002/hoteles/${reservationData.id_hotel}`);
-            const hotel = hotelResponse.data;
-
-            // Check if requesting user is the hotel admin
-            if (hotel && hotel.usuario === requestingUser) {
-                // User is hotel admin, allow deletion
-                await reservationsModel.deleteReservation(id_reservation);
-                return res.json({message: 'Reservación eliminada exitosamente por administrador del hotel'});
-            }
-        } catch (hotelError) {
-            console.error('Error al verificar administrador del hotel:', hotelError);
-            // Continue to permission denied if hotel verification fails
-        }
-
-        // User is neither owner nor hotel admin
-        return res.status(403).json({error: 'No tienes permisos para eliminar esta reserva'});
-        
-    } catch (error) {
-        console.error('Error al eliminar reservación:', error);
-        res.status(500).json({error: 'Error interno del servidor al eliminar la reservación'});
-    }
-});
 
 // Expose maintenance job via router for use in server startup
 router.checkExpiredReservations = checkExpiredReservations;
