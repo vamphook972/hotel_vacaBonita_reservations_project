@@ -70,6 +70,11 @@ async function getReservationsByHotel(id_hotel) {
   return result[0];
 }
 
+async function deleteReservation(id) {
+  const result = await conection.query('DELETE FROM reservations WHERE id = ?', [id]);
+  return result[0];
+}
+
 module.exports = {
   getReservations,
   getReservationById,
@@ -77,5 +82,6 @@ module.exports = {
   updateReservationState,
   updateReservation,
   getReservationsByUser,
-  getReservationsByHotel
-};
+  getReservationsByHotel,
+  deleteReservation
+}; 
