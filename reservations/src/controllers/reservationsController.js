@@ -44,6 +44,44 @@ router.get('/reservations/:id', async (req, res) => {
 });
 
 
+// GET /reservations/user/:user
+// Retrieves all reservations for a specific user
+router.get('/reservations/user/:user', async (req, res) => {
+    try {
+        // Extract username from URL parameters
+        const user = req.params.user;
+        
+        // Fetch reservations for the user from database
+        const reservations = await reservationsModel.getReservationsByUser(user);
+        
+        // Return all reservations for the user (empty array if none found)
+        res.json(reservations);
+    } catch (error) {
+        console.error('Error al obtener reservaciones del usuario:', error);
+        res.status(500).json({error: 'Error interno del servidor al obtener reservaciones del usuario'});
+    }
+});
+
+
+// GET /reservations/hotel/:id_hotel
+// Retrieves all reservations for a specific hotel
+router.get('/reservations/hotel/:id_hotel', async (req, res) => {
+    try {
+        // Extract hotel ID from URL parameters
+        const id_hotel = req.params.id_hotel;
+        
+        // Fetch reservations for the hotel from database
+        const reservations = await reservationsModel.getReservationsByHotel(id_hotel);
+        
+        // Return all reservations for the hotel (empty array if none found)
+        res.json(reservations);
+    } catch (error) {
+        console.error('Error al obtener reservaciones del hotel:', error);
+        res.status(500).json({error: 'Error interno del servidor al obtener reservaciones del hotel'});
+    }
+});
+
+
 // POST /reservations
 // Creates a new reservation with validation and verification
 router.post('/reservations', async (req, res) => {
@@ -84,8 +122,8 @@ router.post('/reservations', async (req, res) => {
         
         // Verify number of occupants doesn't exceed room capacity
         const verifyOcupants = await verifyOcupantsInRoom(id_room, occupants_number)
-        if (!verifyOcupants){
-            return res.json({error: 'Cantidad de ocupantes supera el limite permitido para esa habitacion'})
+        if (!verifyOcupants.available){
+            return res.json({error: verifyOcupants.reason})
         }
 
         // Update room state to occupied
@@ -156,8 +194,8 @@ router.put('/reservations/:id', async (req, res) => {
         // If occupants_number changes, verify capacity
         if (occupants_number !== undefined) {
             const verifyOcupants = await verifyOcupantsInRoom(finalRoomId, occupants_number);
-            if (!verifyOcupants) {
-                return res.json({ error: 'Cantidad de ocupantes supera el limite permitido para esa habitacion' });
+            if (!verifyOcupants.available) {
+                return res.json({ error: verifyOcupants.reason });
             }
             updates.occupants_number = occupants_number;
         }
@@ -204,6 +242,62 @@ router.put('/reservations/:id', async (req, res) => {
     } catch (error) {
         console.error('Error al actualizar reservacion:', error);
         res.status(500).json({ error: 'Error interno del servidor al actualizar la reservacion' });
+    }
+});
+
+// DELETE /reservations/:id
+// Deletes a specific reservation (only the owner or hotel admin can delete their reservation)
+router.delete('/reservations/:id', async (req, res) => {
+    try {
+        // Extract reservation ID from URL parameters
+        const id_reservation = req.params.id;
+        const requestingUser = req.body.user;
+
+        // Validate that user is provided
+        if (!requestingUser) {
+            return res.status(400).json({error: 'Usuario requerido para eliminar la reserva'});
+        }
+
+        // First, get the reservation to check ownership and get hotel info
+        const reservation = await reservationsModel.getReservationById(id_reservation);
+        
+        // Check if reservation exists
+        if (!reservation || reservation.length === 0) {
+            return res.status(404).json({error: 'Reservación no encontrada'});
+        }
+
+        const reservationData = reservation[0];
+        
+        // Check if the requesting user is the owner of the reservation
+        if (reservationData.user === requestingUser) {
+            // User is the owner, allow deletion
+            await reservationsModel.deleteReservation(id_reservation);
+            return res.json({message: 'Reservación eliminada exitosamente'});
+        }
+
+        // If not the owner, check if user is admin of the hotel
+        try {
+            // Get hotel information to check admin
+            const hotelResponse = await axios.get(`http://localhost:3002/hoteles/${reservationData.id_hotel}`);
+            const hotel = hotelResponse.data;
+
+            // Check if requesting user is the hotel admin
+            if (hotel && hotel.usuario === requestingUser) {
+                // User is hotel admin, allow deletion
+                await reservationsModel.deleteReservation(id_reservation);
+                return res.json({message: 'Reservación eliminada exitosamente por administrador del hotel'});
+            }
+        } catch (hotelError) {
+            console.error('Error al verificar administrador del hotel:', hotelError);
+            // Continue to permission denied if hotel verification fails
+        }
+
+        // User is neither owner nor hotel admin
+        return res.status(403).json({error: 'No tienes permisos para eliminar esta reserva'});
+        
+    } catch (error) {
+        console.error('Error al eliminar reservación:', error);
+        res.status(500).json({error: 'Error interno del servidor al eliminar la reservación'});
     }
 });
 
@@ -302,19 +396,24 @@ async function verifyDisponibility(id_room, start_date, end_date) {
 // Verifies if the number of occupants doesn't exceed room capacity
 async function verifyOcupantsInRoom(id_room, occupants_number) {
     try {
+        // Check if occupants number is valid (greater than 0)
+        if (occupants_number <= 0) {
+            return { available: false, reason: 'El número de ocupantes debe ser mayor a 0' };
+        }
+
         // Get room information to check capacity
         const roomResponse = await axios.get(`http://localhost:3005/habitaciones/${id_room}`);
         const room = roomResponse.data;
 
         // Check if number of occupants is within room capacity
         if (occupants_number <= room.numero_ocupantes){
-            return true;
+            return { available: true, reason: null };
         } else {
-            return false;
+            return { available: false, reason: `La habitación solo permite máximo ${room.numero_ocupantes} ocupantes` };
         }
     } catch (error) {
         console.error('Error al verificar ocupantes en habitacion:', error);
-        return false;
+        return { available: false, reason: 'Error al verificar la capacidad de la habitación' };
     }
 }
 
@@ -395,8 +494,6 @@ async function calculateCost(id_room, start_date, end_date) {
         throw new Error('Error al calcular el costo de la reservacion');
     }
 }
-
-
 
 
 // Expose maintenance job via router for use in server startup
