@@ -21,15 +21,15 @@ async function traerReseñaUsuario(usuario) {
 }
 
 // Traer reseñas de un hotel 
-async function traerReseñaHotel(idhotel) {
-    const result = await conection.query('SELECT * FROM reseñas_hoteles WHERE id_hotel = ?', [idhotel]);
+async function traerReseñaHotel(nombre_hotel) {
+    const result = await conection.query('SELECT * FROM reseñas_hoteles WHERE nombre_hotel = ?', [nombre_hotel]);
     return result[0];
 }
+
 // Crear reseña 
 async function crearReseña(reseña) {
     const {
         usuario,
-        id_hotel,
         nombre_hotel,
         numero_estrellas,
         comentario,
@@ -41,11 +41,10 @@ async function crearReseña(reseña) {
     try {
         const result = await conection.query(
             `INSERT INTO reseñas_hoteles 
-            (usuario, id_hotel, nombre_hotel, numero_estrellas, comentario, puntaje_limpieza, puntaje_facilidades, puntaje_comodidades) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+            (usuario, nombre_hotel, numero_estrellas, comentario, puntaje_limpieza, puntaje_facilidades, puntaje_comodidades) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)`,
             [
                 usuario,
-                id_hotel,
                 nombre_hotel,
                 numero_estrellas,
                 comentario,
@@ -63,7 +62,7 @@ async function crearReseña(reseña) {
 }
 
 // Calcular promedio de calificaciones por hotel
-async function calcularPromedioHotel(id_hotel) {
+async function calcularPromedioHotel(nombre_hotel) {
     const [result] = await conection.query(
         `SELECT 
             AVG(numero_estrellas) AS promedio_estrellas,
@@ -71,8 +70,8 @@ async function calcularPromedioHotel(id_hotel) {
             AVG(puntaje_facilidades) AS promedio_facilidades,
             AVG(puntaje_comodidades) AS promedio_comodidades
         FROM reseñas_hoteles
-        WHERE id_hotel = ?`,
-        [id_hotel]
+        WHERE nombre_hotel = ?`,
+        [nombre_hotel]
     );
 
     return {

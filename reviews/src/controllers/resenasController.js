@@ -54,6 +54,28 @@ router.get('/hotel/:idhotel', async (req, res) => {
     }
 });
 
+// Ver reseñas por hotel 
+router.get('/hotel/:nombre_hotel', async (req, res) => {
+    try {
+        const nombre_hotel = req.params.nombre_hotel;
+
+        //Verificar si existe el hotel
+        const existe = await existeHotel(nombre_hotel);
+        if (!existe) {
+            return res.status(404).json({ error: "Hotel no encontrado en el sistema externo" });
+        }
+
+        // Traer reseñas del hotel 
+        const result = await resenasModel.traerReseñaHotel(nombre_hotel);
+
+        // Devolver reseñas
+        res.json(result);
+    } catch (error) {
+        console.error("Error en /resenas/:hotel", error);
+        res.status(500).json({ error: "Error al obtener resenas"});
+    }
+});
+
 // Crear reseña
 router.post('/', async (req, res) => {
     try {
