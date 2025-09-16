@@ -44,6 +44,44 @@ router.get('/reservations/:id', async (req, res) => {
 });
 
 
+// GET /reservations/user/:user
+// Retrieves all reservations for a specific user
+router.get('/reservations/user/:user', async (req, res) => {
+    try {
+        // Extract username from URL parameters
+        const user = req.params.user;
+        
+        // Fetch reservations for the user from database
+        const reservations = await reservationsModel.getReservationsByUser(user);
+        
+        // Return all reservations for the user (empty array if none found)
+        res.json(reservations);
+    } catch (error) {
+        console.error('Error al obtener reservaciones del usuario:', error);
+        res.status(500).json({error: 'Error interno del servidor al obtener reservaciones del usuario'});
+    }
+});
+
+
+// GET /reservations/hotel/:id_hotel
+// Retrieves all reservations for a specific hotel
+router.get('/reservations/hotel/:id_hotel', async (req, res) => {
+    try {
+        // Extract hotel ID from URL parameters
+        const id_hotel = req.params.id_hotel;
+        
+        // Fetch reservations for the hotel from database
+        const reservations = await reservationsModel.getReservationsByHotel(id_hotel);
+        
+        // Return all reservations for the hotel (empty array if none found)
+        res.json(reservations);
+    } catch (error) {
+        console.error('Error al obtener reservaciones del hotel:', error);
+        res.status(500).json({error: 'Error interno del servidor al obtener reservaciones del hotel'});
+    }
+});
+
+
 // POST /reservations
 // Creates a new reservation with validation and verification
 router.post('/reservations', async (req, res) => {

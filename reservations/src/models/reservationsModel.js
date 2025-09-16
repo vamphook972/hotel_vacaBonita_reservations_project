@@ -60,10 +60,22 @@ async function updateReservation(id, data) {
   return result[0];
 }
 
+async function getReservationsByUser(user) {
+  const result = await conection.query('SELECT * FROM reservations WHERE user = ?', [user]);
+  return result[0];
+}
+
+async function getReservationsByHotel(id_hotel) {
+  const result = await conection.query('SELECT * FROM reservations WHERE id_hotel = ?', [id_hotel]);
+  return result[0];
+}
+
 module.exports = {
   getReservations,
   getReservationById,
   createReservation,
   updateReservationState,
-  updateReservation
+  updateReservation,
+  getReservationsByUser,
+  getReservationsByHotel
 };
