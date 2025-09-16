@@ -321,6 +321,7 @@ async function verifyUserName(userName) {
 
         return { available: true, reason: null };
     } catch (error) {
+        console.error('Error al verificar usuario:', error);
         return { available: false, reason: 'Error al verificar el usuario' };
     }
 }
