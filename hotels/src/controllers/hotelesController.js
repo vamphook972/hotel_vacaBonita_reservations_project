@@ -53,6 +53,22 @@ router.get('/hoteles/nombre/:nombre_hotel', async (req, res) => {
   }
 });
 
+// Consultar un hotel por nombre
+router.get('/hoteles/usuario/:usuario', async (req, res) => {
+  try {
+    const usuario = req.params.usuario;
+    const result = await hotelesModel.traerHotelUsuario(usuario);
+
+    if (!result) {
+      return res.status(404).send("Hotel no encontrado");
+    }
+
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Crear un nuevo hotel con validación de rol y habitaciones
 router.post('/hoteles', async (req, res) => {
   const {

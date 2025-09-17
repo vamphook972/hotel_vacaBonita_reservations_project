@@ -27,6 +27,11 @@ async function traerHotelNombre(nombre_hotel) {
   return rows[0];
 }
 
+// Consultar un hotel por usuario
+async function traerHotelUsuario(usuario) {
+  const [rows] = await conection.query('SELECT * FROM hoteles WHERE usuario = ?', [usuario]);
+  return rows[0];
+}
 
 // Crear un nuevo hotel (sin habitaciones)
 async function crearHotel(hotel) {
@@ -68,5 +73,6 @@ module.exports = {
   crearHotel,
   actualizarHotel,
   borrarHotel,
-  traerHotelNombre
+  traerHotelNombre,
+  traerHotelUsuario
 };
