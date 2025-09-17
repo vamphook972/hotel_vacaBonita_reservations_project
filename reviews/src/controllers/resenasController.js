@@ -79,7 +79,7 @@ router.get('/hotel/:nombre_hotel', async (req, res) => {
 // Crear reseña
 router.post('/', async (req, res) => {
     try {
-        const { usuario, id_hotel, calificacion, comentario, puntaje_limpieza, puntaje_facilidades, puntaje_comodidades } = req.body;
+        const { usuario, nombre_hotel, calificacion, comentario, puntaje_limpieza, puntaje_facilidades, puntaje_comodidades } = req.body;
 
         // Validar calificación
         if (!calificacion || calificacion < 1 || calificacion > 5) {
@@ -106,7 +106,7 @@ router.post('/', async (req, res) => {
         }
 
         // Verificar hotel
-        const hotelExiste = await existeHotel(id_hotel);
+        const hotelExiste = await existeHotel(nombre_hotel);
         if (!hotelExiste) {
             return res.status(404).json({ error: 'Hotel no encontrado en el sistema' });
         }
@@ -117,14 +117,10 @@ router.post('/', async (req, res) => {
             return res.status(403).json({ error: 'Solo los clientes pueden dejar reseñas' });
         }
 
-        // Obtener nombre del hotel
-        const responseHotel = await axios.get(`http://localhost:3002/hoteles/${id_hotel}`);
-        const nombre_hotel = responseHotel.data.result.nombre_hotel;
 
         // Crear reseña
         const reseña = {
             usuario,
-            id_hotel,
             nombre_hotel,
             numero_estrellas: calificacion,
             comentario: comentario || null,
@@ -136,7 +132,7 @@ router.post('/', async (req, res) => {
         const nuevaReseña = await resenasModel.crearReseña(reseña);
 
         // Recalcular promedio (sin actualizar en hoteles)
-        const nuevoPromedio = await resenasModel.calcularPromedioHotel(id_hotel);
+        const nuevoPromedio = await resenasModel.calcularPromedioHotel(nombre_hotel);
 
         return res.status(201).json({
             mensaje: "Reseña creada exitosamente",
@@ -203,7 +199,7 @@ async function existeUsuario(usuario) {
 // Verificar si un hotel existe 
 async function existeHotel(hotel) {
     try {
-        const response = await axios.get(`http://localhost:3002/hoteles/${hotel}`);
+        const response = await axios.get(`http://localhost:3002/hoteles/nombre/${hotel}`);
         return response.data && Object.keys(response.data).length > 0; 
         // true si la API devolvió datos, false si no
     } catch (error) {
