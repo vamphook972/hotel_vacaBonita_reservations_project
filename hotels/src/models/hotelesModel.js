@@ -1,6 +1,5 @@
 require('dotenv').config();
 const mysql = require('mysql2/promise');
-const axios = require('axios');
 
 const conection = mysql.createPool({
   host: process.env.DB_HOST_HOTELS,
@@ -67,6 +66,15 @@ async function borrarHotel(id) {
   return result;
 }
 
+async function eliminarPorHotel(id_hotel) {
+  const [result] = await connection.query(
+    'DELETE FROM habitaciones WHERE id_hotel = ?',
+    [id_hotel]
+  );
+  return result.affectedRows; // número de habitaciones eliminadas
+}
+
+
 module.exports = {
   traerHoteles,
   traerHotel,
@@ -74,5 +82,6 @@ module.exports = {
   actualizarHotel,
   borrarHotel,
   traerHotelNombre,
-  traerHotelUsuario
+  traerHotelUsuario,
+  eliminarPorHotel
 };
