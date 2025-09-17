@@ -5,7 +5,7 @@ const axios = require('axios');
 
 // Configuración de tipos de habitación
 const configuracion = {
-  estandar: { numero_ocupantes: 2, base: 100 },
+  estandar: { numero_ocupantes: 2, base: 100 }, // base es el numero inicial para asignar numeros de habitacion
   deluxe:   { numero_ocupantes: 3, base: 200 },
   suite:    { numero_ocupantes: 4, base: 300 }
 };
@@ -70,7 +70,7 @@ router.get('/hoteles/usuario/:usuario', async (req, res) => {
   }
 });
 
-// Crear un nuevo hotel con validación de rol y habitaciones
+// Crear un nuevo hotel con validacion de rol y habitaciones
 router.post('/hoteles', async (req, res) => {
   const {
     usuario,
@@ -130,6 +130,13 @@ router.post('/hoteles', async (req, res) => {
   try {
     for (const tipo in costo_habitacion) {
       const cantidad = cantidad_habitaciones[tipo] || 0;
+//cambio   
+      if (cantidad < 0) {
+        return res.status(400).json({
+          error: `La cantidad de habitaciones para '${tipo}' no puede ser negativa (recibido: ${cantidad}).`
+        });
+      }
+
       const { numero_ocupantes, base } = configuracion[tipo];
 
       for (let i = 0; i < cantidad; i++) {
@@ -168,7 +175,7 @@ router.post('/hoteles', async (req, res) => {
     return res.status(500).json({ error: 'Error al crear habitaciones' });
   }
 });
-
+//se puede eliminar ?? no se esta llamando en ningun lado 
 // Actualizar hotel por id
 router.put('/hoteles/:id', async (req, res) => {
   try {
@@ -203,6 +210,5 @@ router.delete('/hoteles/:id', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-
-
+//delete on cascade en la base de datos para borrar habitaciones y reservas asociadas, ademas de reseñas 
 module.exports = router;
