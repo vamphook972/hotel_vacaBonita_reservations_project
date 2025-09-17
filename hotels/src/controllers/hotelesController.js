@@ -1,6 +1,7 @@
 const { Router } = require('express');
 const router = Router();
 const hotelesModel = require('../models/hotelesModel');
+const axios = require('axios');
 
 // Configuración de tipos de habitación
 const configuracion = {
@@ -202,5 +203,24 @@ router.delete('/hoteles/:id', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+// ELIMINAR HABITACIONES POR ID HOTEL 
+router.delete('/habitacionesHotel/:id_hotel', async (req, res) => {
+  const id_hotel = req.params.id_hotel;
+
+  try {
+    const eliminadas = await habitacionesModel.eliminarPorHotel(id_hotel);
+
+    res.json({
+  mensaje: `Habitaciones del hotel ${id_hotel} eliminadas`,
+  habitaciones_eliminadas: eliminadas
+    });
+
+  } catch (error) {
+    console.error('Error al eliminar habitaciones:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 
 module.exports = router;
