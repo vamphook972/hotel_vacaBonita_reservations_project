@@ -68,7 +68,16 @@ async function eliminarHabitacion(id_habitacion) {
     return result;
 }
 
+async function eliminarPorHotel(id_hotel) {
+  const [result] = await conection.query(
+    'DELETE FROM habitaciones WHERE id_hotel = ?',
+    [id_hotel]
+  );
+  return result.affectedRows; // número de habitaciones eliminadas
+}
+
+
 module.exports = {
-    traerHabitaciones, traerHabitacion, crearHabitacion, actualizarHabitacion,eliminarHabitacion, traerHabitacionHotel, traerHabitacionEstado
+    traerHabitaciones, traerHabitacion, crearHabitacion, actualizarHabitacion,eliminarHabitacion, traerHabitacionHotel, traerHabitacionEstado, eliminarPorHotel
 };
 
