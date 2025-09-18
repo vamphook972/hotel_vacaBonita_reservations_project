@@ -254,7 +254,7 @@ router.delete('/reservations/:id', async (req, res) => {
         const requestingUser = req.body.user;
 
         // Validate that user is provided
-        if (!requestingUser) {
+        if (!requestingUser || requestingUser.length === 0) {
             return res.status(400).json({error: 'Usuario requerido para eliminar la reserva'});
         }
 
@@ -272,6 +272,7 @@ router.delete('/reservations/:id', async (req, res) => {
         if (reservationData.user === requestingUser) {
             // User is the owner, allow deletion
             await reservationsModel.deleteReservation(id_reservation);
+            await updateStateRoom(reservationData.id_room, 'libre');
             return res.json({message: 'Reservación eliminada exitosamente'});
         }
 
@@ -285,6 +286,7 @@ router.delete('/reservations/:id', async (req, res) => {
             if (hotel && hotel.usuario === requestingUser) {
                 // User is hotel admin, allow deletion
                 await reservationsModel.deleteReservation(id_reservation);
+                await updateStateRoom(reservationData.id_room, 'libre');
                 return res.json({message: 'Reservación eliminada exitosamente por administrador del hotel'});
             }
         } catch (hotelError) {
