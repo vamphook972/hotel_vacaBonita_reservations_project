@@ -41,6 +41,39 @@ router.get('/hoteles/:id', async (req, res) => {
   }
 });
 
+// Consultar un hotel por nombre
+router.get('/hoteles/nombre/:nombre_hotel', async (req, res) => {
+  try {
+    const nombre_hotel = req.params.nombre_hotel;
+    const result = await hotelesModel.traerHotelNombre(nombre_hotel);
+
+
+    if (!result) {
+      return res.status(404).send("Hotel no encontrado");
+    }
+
+
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
+router.get('/hoteles/usuario/:usuario', async (req, res) => {
+  try {
+    const usuario = req.params.usuario;
+    const result = await hotelesModel.traerHotelUsuario(usuario);
+
+    if (!result || result.length === 0) {
+      return res.status(404).send("Hotel no encontrado");
+    }
+
+    res.json(result); 
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 //Consultar hoteles por estado (activo/inactivo)  
 router.get('/hoteles/estado/:estado', async (req, res) => {

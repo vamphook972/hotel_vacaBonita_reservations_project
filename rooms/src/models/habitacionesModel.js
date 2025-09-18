@@ -78,6 +78,12 @@ async function eliminarPorHotel(id_hotel) {
 
 
 module.exports = {
-    traerHabitaciones, traerHabitacion, crearHabitacion, actualizarHabitacion,eliminarHabitacion, traerHabitacionHotel, traerHabitacionEstado, eliminarPorHotel
+    traerHabitaciones, 
+    traerHabitacion, 
+    crearHabitacion, 
+    actualizarHabitacion,
+    eliminarHabitacion, 
+    traerHabitacionHotel, 
+    traerHabitacionEstado, 
+    eliminarPorHotel
 };
-

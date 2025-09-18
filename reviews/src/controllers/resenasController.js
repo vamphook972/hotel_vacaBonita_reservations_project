@@ -94,28 +94,23 @@ router.post('/', async (req, res) => {
     try {
         const { usuario, nombre_hotel, calificacion, comentario, puntaje_limpieza, puntaje_facilidades, puntaje_comodidades } = req.body;
 
-
         // Validar calificación
         if (!calificacion || calificacion < 1 || calificacion > 5) {
             return res.status(400).json({ error: 'La calificación es obligatoria y debe estar entre 1 y 5' });
         }
-
 
         // Validar puntajes
         if (!puntaje_limpieza || puntaje_limpieza < 1 || puntaje_limpieza > 10) {
             return res.status(400).json({ error: 'El puntaje de limpieza es obligatorio y debe estar entre 1 y 10' });
         }
 
-
         if (!puntaje_facilidades || puntaje_facilidades < 1 || puntaje_facilidades > 10) {
             return res.status(400).json({ error: 'El puntaje de facilidades es obligatorio y debe estar entre 1 y 10' });
         }
 
-
         if (!puntaje_comodidades || puntaje_comodidades < 1 || puntaje_comodidades > 10) {
             return res.status(400).json({ error: 'El puntaje de comodidades es obligatorio y debe estar entre 1 y 10' });
         }
-
 
         // Verificar usuario
         const usuarioExiste = await existeUsuario(usuario);
@@ -123,13 +118,11 @@ router.post('/', async (req, res) => {
             return res.status(404).json({ error: 'Usuario no encontrado en el sistema' });
         }
 
-
         // Verificar hotel
         const hotelExiste = await existeHotelNombre(nombre_hotel);
         if (!hotelExiste) {
             return res.status(404).json({ error: 'Hotel no encontrado en el sistema' });
         }
-
 
         // Verificar rol del usuario
         const usuarioCliente = await clienteUsuario(usuario);
@@ -137,18 +130,22 @@ router.post('/', async (req, res) => {
             return res.status(403).json({ error: 'Solo los clientes pueden dejar reseñas' });
         }
 
-
         // Obtener hotel por nombre
         const responseHotel = await axios.get(`http://localhost:3002/hoteles/nombre/${nombre_hotel}`);
 
-
-        if (!responseHotel.data || responseHotel.data.length === 0) {
+        if (!responseHotel.data || (Array.isArray(responseHotel.data) && responseHotel.data.length === 0)) {
             return res.status(404).json({ error: 'Hotel no encontrado en el sistema' });
         }
 
+        // Manejar si la API devuelve objeto o array
+        const hotel = Array.isArray(responseHotel.data) ? responseHotel.data[0] : responseHotel.data;
 
-        const id_hotel = responseHotel.data[0].id;
+        //  Validar estado del hotel
+        if (hotel.estado !== 'activo') {
+            return res.status(403).json({ error: 'No se pueden dejar reseñas en un hotel inactivo' });
+        }
 
+        const id_hotel = hotel.id;
 
         // Crear reseña
         const reseña = {
@@ -162,22 +159,16 @@ router.post('/', async (req, res) => {
             puntaje_comodidades
         };
 
-
-
-
         const nuevaReseña = await resenasModel.crearReseña(reseña);
-
 
         // Recalcular promedio (sin actualizar en hoteles)
         const nuevoPromedio = await resenasModel.calcularPromedioHotel(nombre_hotel);
-
 
         return res.status(201).json({
             mensaje: "Reseña creada exitosamente",
             reseña: nuevaReseña,
             promedio_actualizado: nuevoPromedio
         });
-
 
     } catch (error) {
         console.error("Error al crear la reseña COMPLETO:", error);
@@ -186,6 +177,7 @@ router.post('/', async (req, res) => {
         });
     }
 });
+
 
 
 // Obtener promedios de calificaciones para un hotel

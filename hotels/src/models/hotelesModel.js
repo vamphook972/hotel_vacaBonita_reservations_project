@@ -20,6 +20,19 @@ async function traerHotel(id) {
   const [rows] = await conection.query('SELECT * FROM hoteles WHERE id = ?', [id]);
   return rows[0];
 }
+
+// Consultar un hotel por nombre
+async function traerHotelNombre(nombre_hotel) {
+  const [rows] = await conection.query('SELECT * FROM hoteles WHERE nombre_hotel = ?', [nombre_hotel]);
+  return rows[0];
+}
+
+// Consultar un hotel por usuario
+async function traerHotelUsuario(usuario) {
+  const [rows] = await conection.query('SELECT * FROM hoteles WHERE usuario = ?', [usuario]);
+  return rows;
+}
+
 // Consultar hoteles por estado
 async function traerHotelesPorEstado(estado) {
   const sql = `SELECT * FROM hoteles WHERE estado = ?`;
@@ -62,4 +75,6 @@ module.exports = {
   traerHotelesPorEstado,
   crearHotel,
   actualizarHotel,
+  traerHotelNombre,
+  traerHotelUsuario
 };
