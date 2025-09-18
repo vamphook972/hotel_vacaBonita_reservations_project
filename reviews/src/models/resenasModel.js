@@ -1,6 +1,7 @@
 require('dotenv').config();
 const mysql = require('mysql2/promise');
 
+
 const conection = mysql.createPool({
   host: process.env.DB_HOST_REVIEWS,
   user: process.env.DB_USER_REVIEWS,
@@ -8,25 +9,36 @@ const conection = mysql.createPool({
   database: process.env.DB_NAME_REVIEWS
 });
 
+
 // Ver reseñas
 async function traerresenas() {
     const result = await conection.query('SELECT * FROM reseñas_hoteles');
     return result[0];
 }
 
-// Traer reseñas de un usuario 
+
+// Traer reseñas de un usuario
 async function traerReseñaUsuario(usuario) {
     const result = await conection.query('SELECT * FROM reseñas_hoteles WHERE usuario = ?', usuario);
     return result[0];
 }
 
-// Traer reseñas de un hotel 
-async function traerReseñaHotel(nombre_hotel) {
+
+// Traer reseñas de un hotel
+async function traerReseñaHotel(id_hotel) {
+    const result = await conection.query('SELECT * FROM reseñas_hoteles WHERE id_hotel = ?', [id_hotel]);
+    return result[0];
+}
+
+
+// Traer reseñas de un hotel
+async function traerReseñaHotelNombre(nombre_hotel) {
     const result = await conection.query('SELECT * FROM reseñas_hoteles WHERE nombre_hotel = ?', [nombre_hotel]);
     return result[0];
 }
 
-// Crear reseña 
+
+// Crear reseña
 async function crearReseña(reseña) {
     const {
         usuario,
@@ -39,10 +51,11 @@ async function crearReseña(reseña) {
         puntaje_comodidades
     } = reseña;
 
+
     try {
         const result = await conection.query(
-            `INSERT INTO reseñas_hoteles 
-            (usuario, id_hotel, nombre_hotel, numero_estrellas, comentario, puntaje_limpieza, puntaje_facilidades, puntaje_comodidades) 
+            `INSERT INTO reseñas_hoteles
+            (usuario, id_hotel, nombre_hotel, numero_estrellas, comentario, puntaje_limpieza, puntaje_facilidades, puntaje_comodidades)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
             [
                 usuario,
@@ -56,6 +69,7 @@ async function crearReseña(reseña) {
             ]
         );
 
+
         return result;
     } catch (error) {
     console.error("Error en INSERT de reseña:", error); // imprime todo
@@ -63,10 +77,11 @@ async function crearReseña(reseña) {
     }
 }
 
+
 // Calcular promedio de calificaciones por hotel
 async function calcularPromedioHotel(nombre_hotel) {
     const [result] = await conection.query(
-        `SELECT 
+        `SELECT
             AVG(numero_estrellas) AS promedio_estrellas,
             AVG(puntaje_limpieza) AS promedio_limpieza,
             AVG(puntaje_facilidades) AS promedio_facilidades,
@@ -75,6 +90,7 @@ async function calcularPromedioHotel(nombre_hotel) {
         WHERE nombre_hotel = ?`,
         [nombre_hotel]
     );
+
 
     return {
         promedio_estrellas: result[0].promedio_estrellas || 0,
@@ -85,11 +101,14 @@ async function calcularPromedioHotel(nombre_hotel) {
 }
 
 
+
+
 // Borrar reseñas
 async function borrarReseña(id) {
     const result = await conection.query('DELETE FROM reseñas_hoteles WHERE id = ?', id);
     return result[0].affectedRows > 0;
 }
+
 
 module.exports = {
     traerresenas,
@@ -97,5 +116,6 @@ module.exports = {
     traerReseñaHotel,
     crearReseña,
     calcularPromedioHotel,
-    borrarReseña
+    borrarReseña,
+    traerReseñaHotelNombre
 };
