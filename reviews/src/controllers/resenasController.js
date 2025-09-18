@@ -117,10 +117,19 @@ router.post('/', async (req, res) => {
             return res.status(403).json({ error: 'Solo los clientes pueden dejar reseñas' });
         }
 
+        // Obtener hotel por nombre
+        const responseHotel = await axios.get(`http://localhost:3002/hoteles/nombre/${nombre_hotel}`);
+
+        if (!responseHotel.data || responseHotel.data.length === 0) {
+            return res.status(404).json({ error: 'Hotel no encontrado en el sistema' });
+        }
+
+        const id_hotel = responseHotel.data[0].id;
 
         // Crear reseña
         const reseña = {
             usuario,
+            id_hotel,
             nombre_hotel,
             numero_estrellas: calificacion,
             comentario: comentario || null,
@@ -128,6 +137,7 @@ router.post('/', async (req, res) => {
             puntaje_facilidades,
             puntaje_comodidades
         };
+
 
         const nuevaReseña = await resenasModel.crearReseña(reseña);
 
@@ -197,9 +207,9 @@ async function existeUsuario(usuario) {
 }
 
 // Verificar si un hotel existe 
-async function existeHotel(hotel) {
+async function existeHotel(nombre_hotel) {
     try {
-        const response = await axios.get(`http://localhost:3002/hoteles/nombre/${hotel}`);
+        const response = await axios.get(`http://localhost:3002/hoteles/nombre/${nombre_hotel}`);
         return response.data && Object.keys(response.data).length > 0; 
         // true si la API devolvió datos, false si no
     } catch (error) {

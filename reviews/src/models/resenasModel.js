@@ -30,6 +30,7 @@ async function traerReseñaHotel(nombre_hotel) {
 async function crearReseña(reseña) {
     const {
         usuario,
+        id_hotel,
         nombre_hotel,
         numero_estrellas,
         comentario,
@@ -41,10 +42,11 @@ async function crearReseña(reseña) {
     try {
         const result = await conection.query(
             `INSERT INTO reseñas_hoteles 
-            (usuario, nombre_hotel, numero_estrellas, comentario, puntaje_limpieza, puntaje_facilidades, puntaje_comodidades) 
-            VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            (usuario, id_hotel, nombre_hotel, numero_estrellas, comentario, puntaje_limpieza, puntaje_facilidades, puntaje_comodidades) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
             [
                 usuario,
+                id_hotel,
                 nombre_hotel,
                 numero_estrellas,
                 comentario,
