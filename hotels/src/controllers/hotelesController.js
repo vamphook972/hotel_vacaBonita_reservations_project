@@ -43,12 +43,12 @@ router.post('/hoteles', async (req, res) => {
     pais,
     ciudad,
     costo_habitacion,
-    cantidad_habitaciones
+    cantidad_habitaciones  
   } = req.body;
 
   if (
     !usuario || !nombre_hotel || !pais || !ciudad ||
-    !costo_habitacion || !cantidad_habitaciones
+    !costo_habitacion || !cantidad_habitaciones 
   ) {
     console.log("Faltan campos obligatorios");
     return res.status(400).send("Faltan campos obligatorios");
@@ -61,7 +61,7 @@ router.post('/hoteles', async (req, res) => {
     console.log("Datos recibidos del microservicio:", response.data);
     tipo_usuario = String(response.data?.tipo_usuario || '').trim().toLowerCase();
 
-    if (tipo_usuario !== 'admin_agencia') {
+    if (tipo_usuario !== 'admin_hotel') {
       console.log(`Usuario '${usuario}' tiene rol '${tipo_usuario}' → acceso denegado`);
       res.status(403).json({
         error: `El usuario '${usuario}' no tiene permisos para crear hoteles.'`
@@ -83,18 +83,25 @@ router.post('/hoteles', async (req, res) => {
       usuario,
       nombre_hotel,
       pais,
-      ciudad
+      ciudad,
     });
     console.log(`Hotel creado con ID ${id_hotel}`);
   } catch (error) {
-    console.error('Error al crear hotel:', error.message);
-    return res.status(500).json({ error: 'Error al crear hotel en base de datos' });
-  }
+  console.error('Error al crear hotel:', error); // muestra el error completo
+  return res.status(500).json({ error: error.message });
+}
+
 
   // Crear habitaciones base
   try {
     for (const tipo in costo_habitacion) {
       const cantidad = cantidad_habitaciones[tipo] || 0;
+//cambio   
+      if (cantidad < 0) {
+        return res.status(400).json({
+          error: `La cantidad de habitaciones para '${tipo}' no puede ser negativa (recibido: ${cantidad}).`
+        });
+      }
       const { numero_ocupantes, base } = configuracion[tipo];
 
       for (let i = 0; i < cantidad; i++) {
@@ -134,36 +141,23 @@ router.post('/hoteles', async (req, res) => {
   }
 });
 
-// Actualizar hotel por id
+// Actualizar solo el estado de un hotel por id
 router.put('/hoteles/:id', async (req, res) => {
   try {
     const id = req.params.id;
-    const hotelActualizado = req.body;
+    const { estado } = req.body; 
+
+    if (!estado || !['activo', 'inactivo'].includes(estado)) {
+      return res.status(400).json({ error: "El campo 'estado' es obligatorio y debe ser 'activo' o 'inactivo'" });
+    }
 
     const hotelExistente = await hotelesModel.traerHotel(id);
     if (!hotelExistente) {
       return res.status(404).send("Hotel no encontrado");
     }
 
-    await hotelesModel.actualizarHotel(id, hotelActualizado);
-    res.send("Hotel actualizado");
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Borrar hotel por id
-router.delete('/hoteles/:id', async (req, res) => {
-  try {
-    const id = req.params.id;
-
-    const hotelExistente = await hotelesModel.traerHotel(id);
-    if (!hotelExistente) {
-      return res.status(404).send("Hotel no encontrado");
-    }
-
-    await hotelesModel.borrarHotel(id);
-    res.send("Hotel eliminado");
+    await hotelesModel.actualizarHotel(id, estado);
+    res.send("Estado del hotel actualizado");
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
