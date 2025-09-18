@@ -1,11 +1,10 @@
 const { Router } = require('express');
 const router = Router();
 const hotelesModel = require('../models/hotelesModel');
-const axios = require('axios');
 
 // Configuración de tipos de habitación
 const configuracion = {
-  estandar: { numero_ocupantes: 2, base: 100 }, // base es el numero inicial para asignar numeros de habitacion
+  estandar: { numero_ocupantes: 2, base: 100 },
   deluxe:   { numero_ocupantes: 3, base: 200 },
   suite:    { numero_ocupantes: 4, base: 300 }
 };
@@ -36,41 +35,7 @@ router.get('/hoteles/:id', async (req, res) => {
   }
 });
 
-
-// Consultar un hotel por nombre
-// tuve que agregarle /nombre ya que al colocar el endpoint generaba confusion con buscar por id
-router.get('/hoteles/nombre/:nombre_hotel', async (req, res) => {
-  try {
-    const nombre_hotel = req.params.nombre_hotel;
-    const result = await hotelesModel.traerHotelNombre(nombre_hotel);
-
-    if (!result) {
-      return res.status(404).send("Hotel no encontrado");
-    }
-
-    res.json(result);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Consultar un hotel por nombre
-router.get('/hoteles/usuario/:usuario', async (req, res) => {
-  try {
-    const usuario = req.params.usuario;
-    const result = await hotelesModel.traerHotelUsuario(usuario);
-
-    if (!result) {
-      return res.status(404).send("Hotel no encontrado");
-    }
-
-    res.json(result);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Crear un nuevo hotel con validacion de rol y habitaciones
+// Crear un nuevo hotel con validación de rol y habitaciones
 router.post('/hoteles', async (req, res) => {
   const {
     usuario,
@@ -137,10 +102,6 @@ router.post('/hoteles', async (req, res) => {
           error: `La cantidad de habitaciones para '${tipo}' no puede ser negativa (recibido: ${cantidad}).`
         });
       }
-<<<<<<< HEAD
-=======
-
->>>>>>> c54e3466344fbc6dee4534dbdcca4a5c8932ac68
       const { numero_ocupantes, base } = configuracion[tipo];
 
       for (let i = 0; i < cantidad; i++) {
@@ -179,13 +140,8 @@ router.post('/hoteles', async (req, res) => {
     return res.status(500).json({ error: 'Error al crear habitaciones' });
   }
 });
-<<<<<<< HEAD
 
 // Actualizar solo el estado de un hotel por id
-=======
-//se puede eliminar ?? no se esta llamando en ningun lado 
-// Actualizar hotel por id
->>>>>>> c54e3466344fbc6dee4534dbdcca4a5c8932ac68
 router.put('/hoteles/:id', async (req, res) => {
   try {
     const id = req.params.id;
@@ -206,5 +162,5 @@ router.put('/hoteles/:id', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-//delete on cascade en la base de datos para borrar habitaciones y reservas asociadas, ademas de reseñas 
+
 module.exports = router;
