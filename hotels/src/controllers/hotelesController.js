@@ -35,6 +35,29 @@ router.get('/hoteles/:id', async (req, res) => {
   }
 });
 
+//Consultar hoteles por estado (activo/inactivo)  
+router.get('/hoteles/estado/:estado', async (req, res) => {
+  try {
+    const estado = req.params.estado;
+
+    // Validación del estado
+    if (!['activo', 'inactivo'].includes(estado)) {
+      return res.status(400).json({ error: "El estado debe ser 'activo' o 'inactivo'" });
+    }
+
+    const hoteles = await hotelesModel.traerHotelesPorEstado(estado);
+
+    if (hoteles.length === 0) {
+      return res.status(404).json({ message: `No se encontraron hoteles con estado '${estado}'` });
+    }
+
+    res.json(hoteles);
+  } catch (error) {
+    console.error("Error al obtener hoteles por estado:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Crear un nuevo hotel con validación de rol y habitaciones
 router.post('/hoteles', async (req, res) => {
   const {
@@ -57,7 +80,7 @@ router.post('/hoteles', async (req, res) => {
   // Validar si el usuario es administrador 
   let tipo_usuario;
   try {
-    const response = await axios.get(`http://localhost:3001/usuarios/${usuario}`);
+    const response = await axios.get(`http://localhost:3301/usuarios/${usuario}`);
     console.log("Datos recibidos del microservicio:", response.data);
     tipo_usuario = String(response.data?.tipo_usuario || '').trim().toLowerCase();
 
@@ -117,7 +140,7 @@ router.post('/hoteles', async (req, res) => {
         };
 
         try {
-          await axios.post('http://localhost:3005/habitaciones', habitacion);
+          await axios.post('http://localhost:3305/habitaciones', habitacion);
           console.log(`Habitación ${tipo} ${numero_habitacion} creada`);
         } catch (error) {
           const mensaje = error.response?.data?.error || error.message || 'Error desconocido';

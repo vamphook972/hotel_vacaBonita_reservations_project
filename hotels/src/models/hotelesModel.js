@@ -20,12 +20,18 @@ async function traerHotel(id) {
   const [rows] = await conection.query('SELECT * FROM hoteles WHERE id = ?', [id]);
   return rows[0];
 }
+// Consultar hoteles por estado
+async function traerHotelesPorEstado(estado) {
+  const sql = `SELECT * FROM hoteles WHERE estado = ?`;
+  const [rows] = await conection.query(sql, [estado]);
+  return rows;
+}
 
 // Crear un nuevo hotel (sin habitaciones)
 async function crearHotel(hotel) {
   const { usuario, nombre_hotel, pais, ciudad, estado = 'activo'} = hotel;
 
-  const [result] = await connection.query(
+  const [result] = await conection.query(
     `INSERT INTO hoteles 
      (usuario, nombre_hotel, pais, ciudad, estado)
      VALUES (?, ?, ?, ?, ?)`,
@@ -41,13 +47,14 @@ async function actualizarHotel(id, estado,) {
   UPDATE hoteles SET
      estado = ?
      WHERE id = ?`;
-  const [result] = await connection.query(sql, [estado, id]);
+  const [result] = await conection.query(sql, [estado, id]);
   return result;       
 }
 
 module.exports = {
   traerHoteles,
   traerHotel,
+  traerHotelesPorEstado,
   crearHotel,
   actualizarHotel,
 };
