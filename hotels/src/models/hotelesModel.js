@@ -34,26 +34,36 @@ async function traerHotelUsuario(usuario) {
 
 // Crear un nuevo hotel (sin habitaciones)
 async function crearHotel(hotel) {
-  const { usuario, nombre_hotel, pais, ciudad, estado = 'activo'} = hotel;
+  const { usuario, nombre_hotel, pais, ciudad } = hotel;
 
-  const [result] = await connection.query(
+  const [result] = await conection.query(
     `INSERT INTO hoteles 
-     (usuario, nombre_hotel, pais, ciudad, estado)
-     VALUES (?, ?, ?, ?, ?)`,
-    [usuario, nombre_hotel, pais, ciudad, estado]
+     (usuario, nombre_hotel, pais, ciudad)
+     VALUES (?, ?, ?, ?)`,
+    [usuario, nombre_hotel, pais, ciudad]
   );
 
   return result.insertId;
 }
 
 // Actualizar hotel por id
-async function actualizarHotel(id, estado,) {
-  const sql = ` 
-  UPDATE hoteles SET
-     estado = ?
-     WHERE id = ?`;
-  const [result] = await connection.query(sql, [estado, id]);
-  return result;       
+async function actualizarHotel(id, hotel) {
+  const { usuario, nombre_hotel, pais, ciudad } = hotel;
+
+  const [result] = await conection.query(
+    `UPDATE hoteles SET
+     usuario = ?, nombre_hotel = ?, pais = ?, ciudad = ?
+     WHERE id = ?`,
+    [usuario, nombre_hotel, pais, ciudad, id]
+  );
+
+  return result;
+}
+
+// Borrar hotel por id
+async function borrarHotel(id) {
+  const [result] = await conection.query('DELETE FROM hoteles WHERE id = ?', [id]);
+  return result;
 }
 
 
@@ -63,10 +73,7 @@ module.exports = {
   traerHotel,
   crearHotel,
   actualizarHotel,
-<<<<<<< HEAD
-=======
   borrarHotel,
   traerHotelNombre,
   traerHotelUsuario
->>>>>>> c54e3466344fbc6dee4534dbdcca4a5c8932ac68
 };
