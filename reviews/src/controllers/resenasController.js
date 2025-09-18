@@ -94,28 +94,21 @@ router.post('/', async (req, res) => {
     try {
         const { usuario, nombre_hotel, calificacion, comentario, puntaje_limpieza, puntaje_facilidades, puntaje_comodidades } = req.body;
 
-
         // Validar calificación
         if (!calificacion || calificacion < 1 || calificacion > 5) {
             return res.status(400).json({ error: 'La calificación es obligatoria y debe estar entre 1 y 5' });
         }
 
-
         // Validar puntajes
         if (!puntaje_limpieza || puntaje_limpieza < 1 || puntaje_limpieza > 10) {
             return res.status(400).json({ error: 'El puntaje de limpieza es obligatorio y debe estar entre 1 y 10' });
         }
-
-
         if (!puntaje_facilidades || puntaje_facilidades < 1 || puntaje_facilidades > 10) {
             return res.status(400).json({ error: 'El puntaje de facilidades es obligatorio y debe estar entre 1 y 10' });
         }
-
-
         if (!puntaje_comodidades || puntaje_comodidades < 1 || puntaje_comodidades > 10) {
             return res.status(400).json({ error: 'El puntaje de comodidades es obligatorio y debe estar entre 1 y 10' });
         }
-
 
         // Verificar usuario
         const usuarioExiste = await existeUsuario(usuario);
@@ -123,6 +116,11 @@ router.post('/', async (req, res) => {
             return res.status(404).json({ error: 'Usuario no encontrado en el sistema' });
         }
 
+        // Verificar rol del usuario
+        const usuarioCliente = await clienteUsuario(usuario);
+        if (!usuarioCliente) {
+            return res.status(403).json({ error: 'Solo los clientes pueden dejar reseñas' });
+        }
 
         // Verificar hotel
         const hotelExiste = await existeHotelNombre(nombre_hotel);
@@ -130,25 +128,46 @@ router.post('/', async (req, res) => {
             return res.status(404).json({ error: 'Hotel no encontrado en el sistema' });
         }
 
-
-        // Verificar rol del usuario
-        const usuarioCliente = await clienteUsuario(usuario);
-        if (!usuarioCliente) {
-            return res.status(403).json({ error: 'Solo los clientes pueden dejar reseñas' });
-        }
-
-
-        // Obtener hotel por nombre
+        // Obtener hotel por nombre (devuelve un objeto, no un array)
         const responseHotel = await axios.get(`http://localhost:3002/hoteles/nombre/${nombre_hotel}`);
+        const hotel = responseHotel.data;
 
-
-        if (!responseHotel.data || responseHotel.data.length === 0) {
+        if (!hotel || !hotel.id) {
             return res.status(404).json({ error: 'Hotel no encontrado en el sistema' });
         }
 
+        // Validar estado del hotel
+        if (hotel.estado !== 'activo') {
+            return res.status(403).json({ error: `El hotel está '${hotel.estado}', no se pueden dejar reseñas` });
+        }
 
-        const id_hotel = responseHotel.data[0].id;
+        const id_hotel = hotel.id;
 
+        // Validar que el usuario tuvo reservas en este hotel y ya finalizaron
+        const responseReservas = await axios.get(`http://localhost:3003/reservations/user/${usuario}`);
+        const reservasUsuario = responseReservas.data || [];
+
+        // Filtrar solo reservas de ese hotel
+        const reservasHotel = reservasUsuario.filter(r => r.id_hotel == id_hotel);
+
+        if (reservasHotel.length === 0) {
+            return res.status(403).json({ error: 'No puedes dejar una reseña si no has reservado en este hotel' });
+        }
+
+        // Revisar si al menos una reserva ya terminó
+        const hoy = new Date();
+        const tuvoEstancia = reservasHotel.some(r => new Date(r.end_date) < hoy);
+
+        if (!tuvoEstancia) {
+            return res.status(403).json({ error: 'Solo puedes dejar una reseña después de finalizar tu estancia' });
+        }
+
+        // (Opcional) Validar que el usuario no haya dejado ya reseña en este hotel
+        const reseñasPrevias = await resenasModel.traerReseñaHotel(id_hotel);
+        const yaReseño = reseñasPrevias.some(r => r.usuario === usuario);
+        if (yaReseño) {
+            return res.status(403).json({ error: 'Ya has dejado una reseña para este hotel' });
+        }
 
         // Crear reseña
         const reseña = {
@@ -162,22 +181,16 @@ router.post('/', async (req, res) => {
             puntaje_comodidades
         };
 
-
-
-
         const nuevaReseña = await resenasModel.crearReseña(reseña);
 
-
-        // Recalcular promedio (sin actualizar en hoteles)
+        // Recalcular promedio
         const nuevoPromedio = await resenasModel.calcularPromedioHotel(nombre_hotel);
-
 
         return res.status(201).json({
             mensaje: "Reseña creada exitosamente",
             reseña: nuevaReseña,
             promedio_actualizado: nuevoPromedio
         });
-
 
     } catch (error) {
         console.error("Error al crear la reseña COMPLETO:", error);
@@ -186,6 +199,7 @@ router.post('/', async (req, res) => {
         });
     }
 });
+
 
 
 // Obtener promedios de calificaciones para un hotel
@@ -248,13 +262,14 @@ async function existeUsuario(usuario) {
 async function existeHotelNombre(nombre_hotel) {
     try {
         const response = await axios.get(`http://localhost:3002/hoteles/nombre/${nombre_hotel}`);
-        return response.data && Object.keys(response.data).length > 0;
-        // true si la API devolvió datos, false si no
+        // Devuelve true si vino un objeto con id
+        return response.data && response.data.id;
     } catch (error) {
         console.error("Error al verificar hotel en API externa:", error.message);
-        return false; // si la API falla, asumimos que no existe
+        return false;
     }
 }
+
 
 
 // Verificar si un hotel existe

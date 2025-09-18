@@ -41,6 +41,39 @@ router.get('/hoteles/:id', async (req, res) => {
   }
 });
 
+// Consultar un hotel por nombre
+router.get('/hoteles/nombre/:nombre_hotel', async (req, res) => {
+  try {
+    const nombre_hotel = req.params.nombre_hotel;
+    const result = await hotelesModel.traerHotelNombre(nombre_hotel);
+
+
+    if (!result) {
+      return res.status(404).send("Hotel no encontrado");
+    }
+
+
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
+router.get('/hoteles/usuario/:usuario', async (req, res) => {
+  try {
+    const usuario = req.params.usuario;
+    const result = await hotelesModel.traerHotelUsuario(usuario);
+
+    if (!result || result.length === 0) {
+      return res.status(404).send("Hotel no encontrado");
+    }
+
+    res.json(result); 
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 //Consultar hoteles por estado (activo/inactivo)  
 router.get('/hoteles/estado/:estado', async (req, res) => {
@@ -94,7 +127,7 @@ router.post('/hoteles', async (req, res) => {
   // Validar si el usuario es administrador
   let tipo_usuario;
   try {
-    const response = await axios.get(`http://localhost:3301/usuarios/${usuario}`);
+    const response = await axios.get(`http://localhost:3001/usuarios/${usuario}`);
     console.log("Datos recibidos del microservicio:", response.data);
     tipo_usuario = String(response.data?.tipo_usuario || '').trim().toLowerCase();
 
@@ -162,7 +195,7 @@ router.post('/hoteles', async (req, res) => {
 
 
         try {
-          await axios.post('http://localhost:3305/habitaciones', habitacion);
+          await axios.post('http://localhost:3005/habitaciones', habitacion);
           console.log(`Habitación ${tipo} ${numero_habitacion} creada`);
         } catch (error) {
           const mensaje = error.response?.data?.error || error.message || 'Error desconocido';
