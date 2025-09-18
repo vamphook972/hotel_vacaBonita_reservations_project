@@ -125,9 +125,6 @@ router.post('/reservations', async (req, res) => {
         if (!verifyOcupants.available){
             return res.json({error: verifyOcupants.reason})
         }
-
-        // Update room state to occupied
-        await updateStateRoom(id_room, 'ocupada')
         
         // Calculate total cost based on room price and duration
         const cost = await calculateCost(id_room, start_date, end_date);
@@ -151,6 +148,47 @@ router.post('/reservations', async (req, res) => {
     } catch (error) {
         console.error('Error al crear reservacion:', error);
         res.status(500).json({error: 'Error interno del servidor al crear la reservacion'});
+    }
+});
+
+// PUT /reservations/:id/state
+// Actualiza el estado de una reserva (pending, confirm, cancelled, finish)
+router.put('/reservations/:id/state', async (req, res) => {
+    try {
+        const id = req.params.id;
+        const { state } = req.body;
+
+        // Validar estado permitido
+        const validStates = ['pending', 'confirm', 'cancelled', 'finished'];
+        if (!validStates.includes(state)) {
+            return res.status(400).json({ error: 'Estado inválido' });
+        }
+
+        // Obtener la reserva actual
+        const reservation = await reservationsModel.getReservationById(id);
+        if (!reservation || reservation.length === 0) {
+            return res.status(404).json({ error: 'Reserva no encontrada' });
+        }
+        const current = reservation[0];
+
+        // Actualizar estado en BD
+        await reservationsModel.updateReservationState(id, state);
+
+        // Si se CONFIRMA → ocupar habitación
+        if (state === 'confirm') {
+            await updateStateRoom(current.id_room, 'ocupada');
+        }
+
+        // Si se CANCELA o FINALIZA → liberar habitación
+        if (state === 'cancelled' || state === 'finished') {
+            await updateStateRoom(current.id_room, 'libre');
+        }
+
+        return res.json({ message: `Estado de reserva actualizado a ${state}` });
+
+    } catch (error) {
+        console.error('Error al actualizar estado de reserva:', error);
+        res.status(500).json({ error: 'Error interno del servidor al actualizar estado de la reserva' });
     }
 });
 
@@ -254,7 +292,7 @@ router.delete('/reservations/:id', async (req, res) => {
         const requestingUser = req.body.user;
 
         // Validate that user is provided
-        if (!requestingUser) {
+        if (!requestingUser || requestingUser.length === 0) {
             return res.status(400).json({error: 'Usuario requerido para eliminar la reserva'});
         }
 
@@ -272,6 +310,7 @@ router.delete('/reservations/:id', async (req, res) => {
         if (reservationData.user === requestingUser) {
             // User is the owner, allow deletion
             await reservationsModel.deleteReservation(id_reservation);
+            await updateStateRoom(reservationData.id_room, 'libre');
             return res.json({message: 'Reservación eliminada exitosamente'});
         }
 
@@ -285,6 +324,7 @@ router.delete('/reservations/:id', async (req, res) => {
             if (hotel && hotel.usuario === requestingUser) {
                 // User is hotel admin, allow deletion
                 await reservationsModel.deleteReservation(id_reservation);
+                await updateStateRoom(reservationData.id_room, 'libre');
                 return res.json({message: 'Reservación eliminada exitosamente por administrador del hotel'});
             }
         } catch (hotelError) {
