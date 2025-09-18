@@ -1,5 +1,6 @@
 require('dotenv').config();
 const mysql = require('mysql2/promise');
+const axios = require('axios');
 
 const conection = mysql.createPool({
   host: process.env.DB_HOST_HOTELS,
@@ -19,16 +20,10 @@ async function traerHotel(id) {
   const [rows] = await conection.query('SELECT * FROM hoteles WHERE id = ?', [id]);
   return rows[0];
 }
-
-// Consultar un hotel por nombre
-async function traerHotelNombre(nombre_hotel) {
-  const [rows] = await conection.query('SELECT * FROM hoteles WHERE nombre_hotel = ?', [nombre_hotel]);
-  return rows;
-}
-
-// Consultar un hotel por usuario
-async function traerHotelUsuario(usuario) {
-  const [rows] = await conection.query('SELECT * FROM hoteles WHERE usuario = ?', [usuario]);
+// Consultar hoteles por estado
+async function traerHotelesPorEstado(estado) {
+  const sql = `SELECT * FROM hoteles WHERE estado = ?`;
+  const [rows] = await conection.query(sql, [estado]);
   return rows;
 }
 
@@ -36,7 +31,7 @@ async function traerHotelUsuario(usuario) {
 async function crearHotel(hotel) {
   const { usuario, nombre_hotel, pais, ciudad, estado = 'activo'} = hotel;
 
-  const [result] = await connection.query(
+  const [result] = await conection.query(
     `INSERT INTO hoteles 
      (usuario, nombre_hotel, pais, ciudad, estado)
      VALUES (?, ?, ?, ?, ?)`,
@@ -52,21 +47,14 @@ async function actualizarHotel(id, estado,) {
   UPDATE hoteles SET
      estado = ?
      WHERE id = ?`;
-  const [result] = await connection.query(sql, [estado, id]);
+  const [result] = await conection.query(sql, [estado, id]);
   return result;       
 }
-
-
 
 module.exports = {
   traerHoteles,
   traerHotel,
+  traerHotelesPorEstado,
   crearHotel,
   actualizarHotel,
-<<<<<<< HEAD
-=======
-  borrarHotel,
-  traerHotelNombre,
-  traerHotelUsuario
->>>>>>> c54e3466344fbc6dee4534dbdcca4a5c8932ac68
 };
