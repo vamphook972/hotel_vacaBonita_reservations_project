@@ -119,6 +119,13 @@ router.post('/reservations', async (req, res) => {
 
         // Extract hotel ID from room data
         const id_hotel = await extractHotel(id_room);
+
+        // Validar que el hotel esté activo
+        const verifyHotel = await verifyHotelState(id_hotel);
+        if (!verifyHotel.available) {
+            return res.status(400).json({ error: verifyHotel.reason });
+        }
+
         
         // Verify number of occupants doesn't exceed room capacity
         const verifyOcupants = await verifyOcupantsInRoom(id_room, occupants_number)
@@ -388,6 +395,27 @@ async function verifyRoomById(id_room) {
     } catch (error) {
         console.error('Error al verificar habitacion:', error);
         return { available: false, reason: 'Error al verificar la habitacion' };
+    }
+}
+
+// Verifica que el hotel esté activo en el microservicio de hoteles
+async function verifyHotelState(id_hotel) {
+    try {
+        const response = await axios.get(`http://localhost:3002/hoteles/${id_hotel}`);
+        const hotel = response.data;
+
+        if (!hotel) {
+            return { available: false, reason: 'Hotel no encontrado' };
+        }
+
+        if (hotel.estado !== 'activo') {
+            return { available: false, reason: 'No se puede realizar la reserva porque el hotel está inactivo' };
+        }
+
+        return { available: true, reason: null };
+    } catch (error) {
+        console.error('Error al verificar estado del hotel:', error);
+        return { available: false, reason: 'Error al verificar estado del hotel' };
     }
 }
 

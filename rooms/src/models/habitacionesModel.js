@@ -22,10 +22,14 @@ async function traerHabitacionHotel(id_hotel) {
     return result[0];
 }
 
-async function traerHabitacionEstado(estado) {
-    const result = await conection.query('SELECT * FROM habitaciones WHERE estado = ?', estado);
-    return result[0];
+async function traerHabitacionHotelEstado(id_hotel, estado) {
+    const [result] = await conection.query(
+        'SELECT * FROM habitaciones WHERE id_hotel = ? AND estado = ?',
+        [id_hotel, estado]
+    );
+    return result;
 }
+
 
 
 async function crearHabitacion(tipo_habitacion, numero_ocupantes, costo_habitacion, numero_habitacion, id_hotel ) {
@@ -68,13 +72,7 @@ async function eliminarHabitacion(id_habitacion) {
     return result;
 }
 
-async function eliminarPorHotel(id_hotel) {
-  const [result] = await conection.query(
-    'DELETE FROM habitaciones WHERE id_hotel = ?',
-    [id_hotel]
-  );
-  return result.affectedRows; // número de habitaciones eliminadas
-}
+
 
 
 module.exports = {
@@ -84,6 +82,5 @@ module.exports = {
     actualizarHabitacion,
     eliminarHabitacion, 
     traerHabitacionHotel, 
-    traerHabitacionEstado, 
-    eliminarPorHotel
+    traerHabitacionHotelEstado
 };

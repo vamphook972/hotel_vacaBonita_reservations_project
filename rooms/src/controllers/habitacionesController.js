@@ -49,32 +49,44 @@ router.get('/habitacionesHotel/:id_hotel', async (req, res) => {
     }
 });
 
-//MOSTRAR HABITACIONES POR estado
-router.get('/habitacionesEstado/:estado', async (req, res) => {
-    try{
+// MOSTRAR HABITACIONES POR HOTEL Y ESTADO
+router.get('/habitacionesHotelEstado/:id_hotel/:estado', async (req, res) => {
+    try {
+        const id_hotel = parseInt(req.params.id_hotel);
         const estado = req.params.estado.toLowerCase();
 
-        // 1. Validar estados inválidos
-        if (estado !== 'libre' && estado !== 'ocupada') {
-        return res.status(400).json({ 
-            message: "El estado debe ser 'libre' o 'ocupada'" 
-        });
+
+        // Validar id_hotel
+        if (isNaN(id_hotel) || id_hotel <= 0) {
+            return res.status(400).json({ message: "El id_hotel debe ser un número válido" });
         }
 
-        const result = await habitacionesModel.traerHabitacionEstado(estado);
+
+        // Validar estado
+        if (estado !== 'libre' && estado !== 'ocupada') {
+            return res.status(400).json({
+                message: "El estado debe ser 'libre' o 'ocupada'"
+            });
+        }
+
+
+        const result = await habitacionesModel.traerHabitacionHotelEstado(id_hotel, estado);
+
 
         if (result.length === 0) {
-            return res.status(404).json({ 
-                message: `No se encontraron habitaciones con estado ${estado}`});
+            return res.status(404).json({
+                message: `No se encontraron habitaciones con estado ${estado} en el hotel ${id_hotel}`
+            });
         }
 
-        //console.log(result);
+
         res.json(result);
     } catch (error) {
-        console.error('Error al obtener habitaciones por estado:', error.message);
-        res.status(500).send('Error al obtener habitaciones por estado');
- }
+        console.error('Error al obtener habitaciones por hotel y estado:', error.message);
+        res.status(500).send('Error al obtener habitaciones por hotel y estado');
+    }
 });
+
 
 //CREAR HABITACION
 router.post('/habitaciones', async (req, res) => {
@@ -132,26 +144,6 @@ router.delete('/habitaciones/:id_habitacion', async (req, res) => {
   }
 });
 
-// ELIMINAR HABITACIONES POR ID HOTEL
-router.delete('/habitacionesHotel/:id_hotel', async (req, res) => {
-  const id_hotel = req.params.id_hotel;
-
-
-  try {
-    const eliminadas = await habitacionesModel.eliminarPorHotel(id_hotel);
-
-
-    res.json({
-  mensaje: `Habitaciones del hotel ${id_hotel} eliminadas`,
-  habitaciones_eliminadas: eliminadas
-    });
-
-
-  } catch (error) {
-    console.error('Error al eliminar habitaciones:', error.message);
-    res.status(500).json({ error: error.message });
-  }
-});
 
 
 module.exports = router;

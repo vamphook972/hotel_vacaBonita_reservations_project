@@ -154,13 +154,6 @@ router.post('/', async (req, res) => {
             return res.status(403).json({ error: 'No puedes dejar una reseña si no has reservado en este hotel' });
         }
 
-        // Revisar si al menos una reserva ya terminó
-        const hoy = new Date();
-        const tuvoEstancia = reservasHotel.some(r => new Date(r.end_date) < hoy);
-
-        if (!tuvoEstancia) {
-            return res.status(403).json({ error: 'Solo puedes dejar una reseña después de finalizar tu estancia' });
-        }
 
         // (Opcional) Validar que el usuario no haya dejado ya reseña en este hotel
         const reseñasPrevias = await resenasModel.traerReseñaHotel(id_hotel);
