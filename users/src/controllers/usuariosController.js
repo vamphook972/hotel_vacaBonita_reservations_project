@@ -85,12 +85,18 @@ router.put('/usuarios/:usuario/password', async (req, res) => {
 // borrar user
 router.delete('/usuarios/:usuario', async (req, res) => {
   const { usuario } = req.params;
-//si la peticion no envia el usuario 
-  if (!usuario) {
-    return res.status(400).send('Debes indicar el usuario');
-  }
 
-  try {
+  try { //revisa que el usuario que se quiere borrar exista
+    const userRows = await usuariosModel.ConsultarUsuario(usuario);
+    if (!userRows || userRows.length === 0) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+//verifica que el user que se quiere borrar sea de tipo cliente
+    const tipoUsuario  = userRows[0].tiposuario;
+    if (tipoUsuario !== 'cliente' ) {
+      return res.status(403).json({ error: 'Solo se pueden eliminar los usuarios de tipo cliente' });
+    }
+
     const result = await usuariosModel.borrarUsuario(usuario);
     if (result.affectedRows === 0) { //por si al buscar el usuario para borrarlo no lo encuentra
       return res.status(404).json({ error: 'Usuario no encontrado' });
