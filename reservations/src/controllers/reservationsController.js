@@ -159,7 +159,7 @@ router.post('/reservations', async (req, res) => {
 });
 
 // PUT /reservations/:id/state
-// Actualiza el estado de una reserva (pending, confirm, cancelled, finish)
+// Update reservation state to (pending, confirm, cancelled, finish)
 router.put('/reservations/:id/state', async (req, res) => {
     try {
         const id = req.params.id;
@@ -180,11 +180,6 @@ router.put('/reservations/:id/state', async (req, res) => {
 
         // Actualizar estado en BD
         await reservationsModel.updateReservationState(id, state);
-
-        // Si se CONFIRMA → ocupar habitación
-        if (state === 'confirm') {
-            await updateStateRoom(current.id_room, 'ocupada');
-        }
 
         // Si se CANCELA o FINALIZA → liberar habitación
         if (state === 'cancelled' || state === 'finished') {
@@ -515,6 +510,25 @@ async function updateStateRoom(id_room, state){
     }
 }
 
+async function checkReservationStates() {
+    try {
+        const now = new Date();
+        const reservations = await reservationsModel.getReservations();
+    
+        for (const reservation of reservations) {
+            const startDate = new Date(reservation.fecha_inicio);
+            const endDate = new Date(reservation.fecha_fin);
+    
+            // Case 1: confirmed reservation
+            if (reservation.state === 'confirm' && now >= startDate && now < endDate) {
+            await updateStateRoom(reservation.id_room, 'ocupada');
+            }
+    
+        }
+    } catch (err) {
+      console.error('Error verificando estados de reservas:', err);
+    }
+  }
 
 // check for expired reservations and free room
 async function checkExpiredReservations() {
@@ -567,6 +581,7 @@ async function calculateCost(id_room, start_date, end_date) {
 
 // Expose maintenance job via router for use in server startup
 router.checkExpiredReservations = checkExpiredReservations;
+router.checkReservationStates = checkReservationStates;
 
 // Export the router for use in the main application
 module.exports = router;
