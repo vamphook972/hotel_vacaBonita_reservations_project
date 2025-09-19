@@ -79,16 +79,16 @@ async function crearReseña(reseña) {
 
 
 // Calcular promedio de calificaciones por hotel
-async function calcularPromedioHotel(nombre_hotel) {
+async function calcularPromedioHotel(id_hotel) {
     const [result] = await conection.query(
         `SELECT
-            AVG(numero_estrellas) AS promedio_estrellas,
-            AVG(puntaje_limpieza) AS promedio_limpieza,
-            AVG(puntaje_facilidades) AS promedio_facilidades,
-            AVG(puntaje_comodidades) AS promedio_comodidades
+            ROUND(AVG(numero_estrellas),1) AS promedio_estrellas,
+            ROUND(AVG(puntaje_limpieza),1) AS promedio_limpieza,
+            ROUND(AVG(puntaje_facilidades),1) AS promedio_facilidades,
+            ROUND(AVG(puntaje_comodidades),1) AS promedio_comodidades
         FROM reseñas_hoteles
-        WHERE nombre_hotel = ?`,
-        [nombre_hotel]
+        WHERE id_hotel = ?`,
+        [id_hotel]
     );
 
 
