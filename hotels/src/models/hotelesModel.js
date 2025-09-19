@@ -43,14 +43,14 @@ async function traerHotelesPorEstado(estado) {
 
 // Crear un nuevo hotel (sin habitaciones)
 async function crearHotel(hotel) {
-  const { usuario, nombre_hotel, pais, ciudad, estado = 'activo'} = hotel;
+  const { usuario, nombre_hotel, pais, ciudad_direccion, estado = 'activo'} = hotel;
 
 
   const [result] = await conection.query(
     `INSERT INTO hoteles
-     (usuario, nombre_hotel, pais, ciudad, estado)
+     (usuario, nombre_hotel, pais, ciudad_direccion, estado)
      VALUES (?, ?, ?, ?, ?)`,
-    [usuario, nombre_hotel, pais, ciudad, estado]
+    [usuario, nombre_hotel, pais, ciudad_direccion, estado]
   );
 
 
