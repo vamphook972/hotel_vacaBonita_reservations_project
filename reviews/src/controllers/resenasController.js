@@ -177,7 +177,7 @@ router.post('/', async (req, res) => {
         const nuevaReseña = await resenasModel.crearReseña(reseña);
 
         // Recalcular promedio
-        const nuevoPromedio = await resenasModel.calcularPromedioHotel(nombre_hotel);
+        const nuevoPromedio = await resenasModel.calcularPromedioHotel(id_hotel);
 
         return res.status(201).json({
             mensaje: "Reseña creada exitosamente",
