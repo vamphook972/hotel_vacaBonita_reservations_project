@@ -92,7 +92,7 @@ router.delete('/usuarios/:usuario', async (req, res) => {
       return res.status(404).json({ error: 'Usuario no encontrado' });
     }
 //verifica que el user que se quiere borrar sea de tipo cliente
-    const tipoUsuario  = userRows[0].tiposuario;
+    const tipoUsuario  = userRows[0].tipo_usuario;
     if (tipoUsuario !== 'cliente' ) {
       return res.status(403).json({ error: 'Solo se pueden eliminar los usuarios de tipo cliente' });
     }
