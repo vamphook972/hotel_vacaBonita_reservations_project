@@ -109,14 +109,14 @@ router.post('/hoteles', async (req, res) => {
     usuario,
     nombre_hotel,
     pais,
-    ciudad,
+    ciudad_direccion,
     costo_habitacion,
     cantidad_habitaciones  
   } = req.body;
 
 
   if (
-    !usuario || !nombre_hotel || !pais || !ciudad ||
+    !usuario || !nombre_hotel || !pais || !ciudad_direccion ||
     !costo_habitacion || !cantidad_habitaciones
   ) {
     console.log("Faltan campos obligatorios");
@@ -156,7 +156,7 @@ router.post('/hoteles', async (req, res) => {
       usuario,
       nombre_hotel,
       pais,
-      ciudad,
+      ciudad_direccion,
     });
     console.log(`Hotel creado con ID ${id_hotel}`);
   } catch (error) {
