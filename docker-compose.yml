@@ -1,0 +1,90 @@
+version: '3'
+services:
+  microWeb:
+    image: jparedeshub/microweb_proyecto:latest
+    ports:
+      - "8181:80"
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == servidorUbuntu2
+    depends_on:
+      - users
+      - hotels
+      - reservations
+      - reviews
+      - rooms
+  
+  users:
+    image: jparedeshub/users_proyecto:latest
+    ports:
+      - "3001:3001"
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == servidorUbuntu2
+    depends_on:
+      - db
+  
+  hotels:
+    image: jparedeshub/hotels_proyecto:latest
+    ports:
+      - "3002:3002"
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == servidorUbuntu2
+    depends_on:
+      - users
+      - db
+
+  reservations:
+    image: jparedeshub/reservations_proyecto:latest
+    ports:
+      - "3003:3003"
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == servidorUbuntu2
+    depends_on:
+      - users
+      - hotels
+      - db
+  
+  reviews:
+    image: jparedeshub/reviews_proyecto:latest
+    ports:
+      - "3004:3004"
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == servidorUbuntu2
+    depends_on:
+      - users
+      - hotels
+      - db
+
+  rooms:
+    image: jparedeshub/rooms_proyecto:latest
+    ports:
+      - "3005:3005"
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == servidorUbuntu2
+    depends_on:
+      - hotels
+      - db
+  
+  db:
+    image: mysql:8.0
+    ports:
+      - "3307:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=mysql
+      - MYSQL_DATABASE=usuarios_db
+    volumes:
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == servidorUbuntu1
