@@ -22,7 +22,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.hostname == servidorUbuntu2
+          - node.hostname == servidorUbuntu1
     depends_on:
       - db
   
@@ -33,7 +33,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.hostname == servidorUbuntu2
+          - node.hostname == servidorUbuntu1
     depends_on:
       - users
       - db
@@ -45,7 +45,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.hostname == servidorUbuntu2
+          - node.hostname == servidorUbuntu1
     depends_on:
       - users
       - hotels
@@ -58,7 +58,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.hostname == servidorUbuntu2
+          - node.hostname == servidorUbuntu1
     depends_on:
       - users
       - hotels
@@ -71,7 +71,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.hostname == servidorUbuntu2
+          - node.hostname == servidorUbuntu1
     depends_on:
       - hotels
       - db
