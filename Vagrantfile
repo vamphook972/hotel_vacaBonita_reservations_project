@@ -11,11 +11,17 @@ Vagrant.configure("2") do |config|
     servidorUbuntu1.vm.network :private_network, ip: "192.168.100.2"
     servidorUbuntu1.vm.hostname = "servidorUbuntu1"
     servidorUbuntu1.vm.box_download_insecure=true
+
+    ## Provisioning scripts
+    servidorUbuntu1.vm.provision "shell", path: "scripts/provision_docker.sh"
   end
   config.vm.define :servidorUbuntu2 do |servidorUbuntu2|
     servidorUbuntu2.vm.box = "bento/ubuntu-22.04"
     servidorUbuntu2.vm.network :private_network, ip: "192.168.100.3"
     servidorUbuntu2.vm.hostname = "servidorUbuntu2"
     servidorUbuntu2.vm.box_download_insecure=true
+
+    ## Provisioning scripts
+    servidorUbuntu2.vm.provision "shell", path: "scripts/provision_docker.sh"
   end
 end
