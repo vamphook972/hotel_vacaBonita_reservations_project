@@ -1,7 +1,7 @@
-create database agencia;
-use agencia;
+CREATE DATABASE IF NOT EXISTS agencia;
+USE agencia;
 
-CREATE TABLE usuarios (
+CREATE TABLE IF NOT EXISTS usuarios (
   nombre VARCHAR(25) NOT NULL,
   tipo_usuario ENUM('cliente', 'admin_hotel', 'admin_agencia') NOT NULL,
   genero ENUM('masculino', 'femenino') NOT NULL,
@@ -12,7 +12,7 @@ CREATE TABLE usuarios (
   PRIMARY KEY (usuario)
 );
 
-CREATE TABLE hoteles (
+CREATE TABLE IF NOT EXISTS hoteles (
     id INT PRIMARY KEY AUTO_INCREMENT,
     usuario VARCHAR(100) NOT NULL,
     nombre_hotel VARCHAR(200) NOT NULL,
@@ -21,7 +21,7 @@ CREATE TABLE hoteles (
     estado ENUM('activo', 'inactivo') NOT NULL
 );
 
-CREATE TABLE reservations (
+CREATE TABLE IF NOT EXISTS reservations (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user VARCHAR(100) NOT NULL,
     id_hotel INT NOT NULL,
@@ -33,7 +33,7 @@ CREATE TABLE reservations (
     cost DECIMAL(10,2) NOT NULL
 );
 
-CREATE TABLE reseñas_hoteles (
+CREATE TABLE IF NOT EXISTS reseñas_hoteles (
     id INT AUTO_INCREMENT PRIMARY KEY,
     usuario VARCHAR(100) NOT NULL,
     id_hotel INT NOT NULL,
@@ -45,7 +45,7 @@ CREATE TABLE reseñas_hoteles (
     puntaje_comodidades FLOAT NOT NULL CHECK (puntaje_comodidades BETWEEN 1 AND 10)
 );
 
-CREATE TABLE habitaciones (
+CREATE TABLE IF NOT EXISTS habitaciones (
     id_habitacion INT AUTO_INCREMENT PRIMARY KEY,
     tipo_habitacion ENUM('estandar', 'deluxe', 'suite') NOT NULL,
     estado ENUM('libre', 'ocupada') NOT NULL,
@@ -54,3 +54,4 @@ CREATE TABLE habitaciones (
     numero_habitacion INT NOT NULL,
     id_hotel INT NOT NULL
 );
+
