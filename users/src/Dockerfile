@@ -1,7 +1,7 @@
 FROM node
 EXPOSE 3001
 
-WORKDIR /users
+WORKDIR /users/src
 
 COPY controllers /users/src/controllers
 COPY models /users/src/models

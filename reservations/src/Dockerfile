@@ -1,7 +1,7 @@
 FROM node
 EXPOSE 3003
 
-WORKDIR /reservations
+WORKDIR /reservations/src
 
 COPY controllers /reservations/src/controllers
 COPY models /reservations/src/models

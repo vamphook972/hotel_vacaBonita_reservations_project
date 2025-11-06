@@ -1,7 +1,7 @@
 FROM node
 EXPOSE 3005
 
-WORKDIR /rooms
+WORKDIR /rooms/src
 
 COPY controllers /rooms/src/controllers
 COPY models /rooms/src/models

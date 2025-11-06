@@ -1,7 +1,7 @@
 FROM node
 EXPOSE 3004
 
-WORKDIR /reviews
+WORKDIR /reviews/src
 
 COPY controllers /reviews/src/controllers
 COPY models /reviews/src/models
