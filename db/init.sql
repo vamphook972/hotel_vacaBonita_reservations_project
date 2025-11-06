@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS reservations (
     cost DECIMAL(10,2) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS reseñas_hoteles (
+CREATE TABLE IF NOT EXISTS resenas_hoteles (
     id INT AUTO_INCREMENT PRIMARY KEY,
     usuario VARCHAR(100) NOT NULL,
     id_hotel INT NOT NULL,
