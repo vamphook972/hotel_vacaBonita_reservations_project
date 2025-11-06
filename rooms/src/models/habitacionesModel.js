@@ -2,10 +2,10 @@ require('dotenv').config();
 const mysql = require('mysql2/promise');
 
 const conection = mysql.createPool({
-  host: process.env.DB_HOST_ROOMS,
-  user: process.env.DB_USER_ROOMS,
-  password: process.env.DB_PASSWORD_ROOMS,
-  database: process.env.DB_NAME_ROOMS
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.MYSQL_ROOT_PASSWORD,
+    database: process.env.MYSQL_DATABASE
 });
 
 async function traerHabitaciones() {

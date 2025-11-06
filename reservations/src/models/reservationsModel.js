@@ -4,10 +4,10 @@ const mysql = require('mysql2/promise');
 
 // configure conection with .env file
 const conection = mysql.createPool({
-  host: process.env.DB_HOST_RESERVATIONS,
-  user: process.env.DB_USER_RESERVATIONS,
-  password: process.env.DB_PASSWORD_RESERVATIONS,
-  database: process.env.DB_NAME_RESERVATIONS
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.MYSQL_ROOT_PASSWORD,
+  database: process.env.MYSQL_DATABASE
 });
 
 async function getReservations() {

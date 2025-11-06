@@ -3,10 +3,10 @@ const mysql = require('mysql2/promise');
 
 
 const conection = mysql.createPool({
-  host: process.env.DB_HOST_REVIEWS,
-  user: process.env.DB_USER_REVIEWS,
-  password: process.env.DB_PASSWORD_REVIEWS,
-  database: process.env.DB_NAME_REVIEWS
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.MYSQL_ROOT_PASSWORD,
+    database: process.env.MYSQL_DATABASE
 });
 
 

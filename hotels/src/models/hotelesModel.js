@@ -3,10 +3,10 @@ const mysql = require('mysql2/promise');
 
 
 const conection = mysql.createPool({
-  host: process.env.DB_HOST_HOTELS,
-  user: process.env.DB_USER_HOTELS,
-  password: process.env.DB_PASSWORD_HOTELS,
-  database: process.env.DB_NAME_HOTELS
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.MYSQL_ROOT_PASSWORD,
+  database: process.env.MYSQL_DATABASE
 });
 // Consultar todos los hoteles
 async function traerHoteles() {
