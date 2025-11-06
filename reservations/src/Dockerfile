@@ -8,6 +8,6 @@ COPY models /reservations/src/models
 COPY index.js /reservations/src/
 
 RUN npm init --yes
-RUN npm install express morgan mysql mysql2 axios
+RUN npm install express morgan mysql mysql2 axios dotenv
 
 CMD node index.js
