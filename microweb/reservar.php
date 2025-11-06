@@ -1,4 +1,12 @@
 <?php
+session_start();
+
+// Verificar si hay usuario logueado
+if (!isset($_SESSION['usuario'])) {
+    header("Location: index.php");
+    exit();
+}
+
 $errorMsg = ""; // variable para guardar el error del servidor
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -47,7 +55,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } else {
             // Si todo salió bien (puedes redirigir o mostrar un mensaje de éxito)
             header("Location: cliente.php?success=1");
-            exit;
+            exit();
         }
     }
 

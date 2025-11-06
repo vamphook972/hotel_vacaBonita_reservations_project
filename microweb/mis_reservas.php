@@ -4,7 +4,7 @@ session_start();
 // Verificar si el usuario ha iniciado sesión y es cliente
 if (!isset($_SESSION['usuario']) || $_SESSION['tipo_usuario'] !== 'cliente') {
     header("Location: index.php");
-    exit;
+    exit();
 }
 
 $usuario = $_SESSION['usuario'];

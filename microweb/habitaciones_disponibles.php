@@ -1,5 +1,12 @@
 <?php
-// hotel_habitaciones_disponibles.php
+session_start();
+
+// Verificar si hay usuario logueado
+if (!isset($_SESSION['usuario'])) {
+    header("Location: index.php");
+    exit();
+}
+
 $id_hotel = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
 $API_URL = "http://rooms:3005/habitacionesHotelEstado/$id_hotel/libre";

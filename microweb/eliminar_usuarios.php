@@ -1,5 +1,12 @@
 <?php
-// eliminar_usuario.php
+session_start();
+
+// Verifica si el usuario está logueado y es administrador de agencia
+if (!isset($_SESSION['usuario']) || $_SESSION['tipo_usuario'] !== 'admin_agencia') {
+    header("Location: index.php");
+    exit();
+}
+
 $error = null;
 $mensaje = null;
 

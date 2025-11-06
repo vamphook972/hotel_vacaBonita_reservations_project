@@ -4,7 +4,7 @@ session_start();
 // Verificar sesión de usuario
 if (!isset($_SESSION['usuario'])) {
     header("Location: index.php");
-    exit;
+    exit();
 }
 
 $mensaje = null;

@@ -1,5 +1,12 @@
 <?php
-// Ver reseñas de un hotel específico
+session_start();
+
+// Verificar si hay usuario logueado
+if (!isset($_SESSION['usuario'])) {
+    header("Location: index.php");
+    exit();
+}
+
 $reseñas = [];
 $promedios = null;
 $error = null;

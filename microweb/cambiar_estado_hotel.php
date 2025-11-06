@@ -8,7 +8,8 @@ if (!isset($_SESSION['usuario']) || $_SESSION['tipo_usuario'] !== 'admin_agencia
 }
 
 if (!isset($_GET['id'])) {
-    die("ID del hotel no especificado.");
+    header("Location: admin_agencia.php");
+    exit();
 }
 
 $id_hotel = $_GET['id'];

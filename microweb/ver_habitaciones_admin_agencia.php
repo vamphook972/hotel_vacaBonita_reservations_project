@@ -1,5 +1,12 @@
 <?php
-// hotel_habitaciones.php
+session_start();
+
+// Verifica si el usuario está logueado y es administrador de agencia
+if (!isset($_SESSION['usuario']) || $_SESSION['tipo_usuario'] !== 'admin_agencia') {
+    header("Location: index.php");
+    exit();
+}
+
 $id_hotel = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
 $API_URL = "http://rooms:3005/habitacionesHotel/$id_hotel";

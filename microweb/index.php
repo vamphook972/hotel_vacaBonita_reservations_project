@@ -38,7 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 default:
                     $error = "Tipo de usuario desconocido.";
             }
-            exit;
+            exit();
         }
     } else {
         $error = "No se pudo conectar al servicio de usuarios.";

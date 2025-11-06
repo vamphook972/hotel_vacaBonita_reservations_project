@@ -1,4 +1,12 @@
 <?php
+session_start();
+
+// Verificar si hay usuario logueado
+if (!isset($_SESSION['usuario'])) {
+    header("Location: index.php");
+    exit();
+}
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Recibir datos del formulario
     $usuario = $_POST['usuario'];

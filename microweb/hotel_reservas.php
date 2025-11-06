@@ -4,12 +4,13 @@ session_start();
 // Verificar si el usuario ha iniciado sesión
 if (!isset($_SESSION['usuario'])) {
     header("Location: index.php");
-    exit;
+    exit();
 }
 
 // Validar que venga el id_hotel por GET
 if (!isset($_GET['id_hotel'])) {
-    die("No se especificó el hotel.");
+    header("Location: index.php");
+    exit();
 }
 
 $id_hotel = intval($_GET['id_hotel']);
