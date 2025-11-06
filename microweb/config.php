@@ -1,8 +1,8 @@
 <?php
 // ===== config.php =====
 
-const API_USERS = 'http://dns.vacabonita.com:3001';
-const API_HOTELES = 'http://dns.vacabonita.com:3002';
-const API_RESERVAS = 'http://dns.vacabonita.com:3003';
-const API_RESEÑAS = 'http://dns.vacabonita.com:3004';
-const API_HABITACIONES = 'http://dns.vacabonita.com:3005';
+const API_USERS = 'http://users:3001';
+const API_HOTELES = 'http://hotels:3002';
+const API_RESERVAS = 'http://reservations:3003';
+const API_RESEÑAS = 'http://reviews:3004';
+const API_HABITACIONES = 'http://rooms:3005';

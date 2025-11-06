@@ -18,7 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $error = "Debes ingresar una nueva contraseña.";
     } else {
         $usuario = $_SESSION['usuario'];
-        $API_URL = "http://dns.vacabonita.com:3001/usuarios/$usuario/password";
+        $API_URL = "http://users:3001/usuarios/$usuario/password";
 
         // Petición PUT a la API
         $ch = curl_init($API_URL);

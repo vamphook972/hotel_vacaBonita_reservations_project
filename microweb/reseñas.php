@@ -24,7 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $payload = json_encode($data);
 
     // URL de la API
-    $url = "http://dns.vacabonita.com:3004/resenas";
+    $url = "http://reviews:3004/resenas";
 
     // Inicializar cURL
     $ch = curl_init($url);

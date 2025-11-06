@@ -10,7 +10,7 @@ if (!isset($_SESSION['usuario']) || $_SESSION['tipo_usuario'] !== 'cliente') {
 $usuario = $_SESSION['usuario'];
 
 // URL del microservicio de reservas
-$API_URL = "http://dns.vacabonita.com:3003/reservations/user/" . urlencode($usuario);
+$API_URL = "http://reservations:3003/reservations/user/" . urlencode($usuario);
 
 $reservas = [];
 $error = null;

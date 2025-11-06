@@ -22,7 +22,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $payload = json_encode($data);
 
     // URL de la API
-    $url = "http://dns.vacabonita.com:3003/reservations";
+    $url = "http://reservations:3003/reservations";
 
     // Inicializar cURL
     $ch = curl_init($url);

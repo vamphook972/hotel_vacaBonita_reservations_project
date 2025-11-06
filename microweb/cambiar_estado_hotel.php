@@ -12,7 +12,7 @@ if (!isset($_GET['id'])) {
 }
 
 $id_hotel = $_GET['id'];
-$API_URL = "http://dns.vacabonita.com:3002/hoteles/$id_hotel";
+$API_URL = "http://hotels:3002/hoteles/$id_hotel";
 $mensaje = "";
 $error = "";
 $hotel = null;

@@ -7,7 +7,7 @@ if (!isset($_SESSION['usuario']) || $_SESSION['tipo_usuario'] !== 'admin_agencia
     exit();
 }
 
-$API_URL = "http://dns.vacabonita.com:3001/usuarios"; // Ajusta el puerto al de tu microservicio de usuarios
+$API_URL = "http://users:3001/usuarios"; // Ajusta el puerto al de tu microservicio de usuarios
 $usuarios = [];
 $error = "";
 

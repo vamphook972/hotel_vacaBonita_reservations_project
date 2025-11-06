@@ -2,7 +2,7 @@
 // hotel_habitaciones.php
 $id_hotel = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
-$API_URL = "http://dns.vacabonita.com:3005/habitacionesHotel/$id_hotel";
+$API_URL = "http://rooms:3005/habitacionesHotel/$id_hotel";
 $response = @file_get_contents($API_URL);
 
 $habitaciones = [];

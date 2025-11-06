@@ -15,7 +15,7 @@ if (!isset($_GET['id_hotel'])) {
 $id_hotel = intval($_GET['id_hotel']);
 
 // URL del microservicio de reservas por hotel
-$API_URL = "http://dns.vacabonita.com:3003/reservations/hotel/" . urlencode($id_hotel);
+$API_URL = "http://reservations:3003/reservations/hotel/" . urlencode($id_hotel);
 
 $reservas = [];
 $error = null;

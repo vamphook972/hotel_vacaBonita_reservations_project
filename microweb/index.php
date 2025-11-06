@@ -2,7 +2,7 @@
 session_start();
 
 // URL del microservicio de usuarios (ajusta el puerto según tu configuración)
-$API_URL = "http://dns.vacabonita.com:3001/usuarios";
+$API_URL = "http://users:3001/usuarios";
 
 // Si enviaron el formulario
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
