@@ -127,7 +127,7 @@ router.post('/hoteles', async (req, res) => {
   // Validar si el usuario es administrador
   let tipo_usuario;
   try {
-    const response = await axios.get(`http://localhost:3001/usuarios/${usuario}`);
+    const response = await axios.get(`http://users:3001/usuarios/${usuario}`);
     console.log("Datos recibidos del microservicio:", response.data);
     tipo_usuario = String(response.data?.tipo_usuario || '').trim().toLowerCase();
 
@@ -195,7 +195,7 @@ router.post('/hoteles', async (req, res) => {
 
 
         try {
-          await axios.post('http://localhost:3005/habitaciones', habitacion);
+          await axios.post('http://rooms:3005/habitaciones', habitacion);
           console.log(`Habitación ${tipo} ${numero_habitacion} creada`);
         } catch (error) {
           const mensaje = error.response?.data?.error || error.message || 'Error desconocido';

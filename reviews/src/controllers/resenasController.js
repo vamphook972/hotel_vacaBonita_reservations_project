@@ -129,7 +129,7 @@ router.post('/', async (req, res) => {
         }
 
         // Obtener hotel por nombre (devuelve un objeto, no un array)
-        const responseHotel = await axios.get(`http://localhost:3002/hoteles/nombre/${nombre_hotel}`);
+        const responseHotel = await axios.get(`http://hotels:3002/hoteles/nombre/${nombre_hotel}`);
         const hotel = responseHotel.data;
 
         if (!hotel || !hotel.id) {
@@ -144,7 +144,7 @@ router.post('/', async (req, res) => {
         const id_hotel = hotel.id;
 
         // Validar que el usuario tuvo reservas en este hotel y ya finalizaron
-        const responseReservas = await axios.get(`http://localhost:3003/reservations/user/${usuario}`);
+        const responseReservas = await axios.get(`http://reservations:3003/reservations/user/${usuario}`);
         const reservasUsuario = responseReservas.data || [];
 
         // Filtrar solo reservas de ese hotel
@@ -241,7 +241,7 @@ router.delete('/:id', async (req, res) => {
 // Verificar si un usuario existe
 async function existeUsuario(usuario) {
     try {
-        const response = await axios.get(`http://localhost:3001/usuarios/${usuario}`);
+        const response = await axios.get(`http://users:3001/usuarios/${usuario}`);
         return response.data && Object.keys(response.data).length > 0;
         // true si la API devolvió datos, false si no
     } catch (error) {
@@ -254,7 +254,7 @@ async function existeUsuario(usuario) {
 // Verificar si un hotel existe
 async function existeHotelNombre(nombre_hotel) {
     try {
-        const response = await axios.get(`http://localhost:3002/hoteles/nombre/${nombre_hotel}`);
+        const response = await axios.get(`http://hotels:3002/hoteles/nombre/${nombre_hotel}`);
         // Devuelve true si vino un objeto con id
         return response.data && response.data.id;
     } catch (error) {
@@ -268,7 +268,7 @@ async function existeHotelNombre(nombre_hotel) {
 // Verificar si un hotel existe
 async function existeHotel(id_hotel) {
     try {
-        const response = await axios.get(`http://localhost:3002/hoteles/${id_hotel}`);
+        const response = await axios.get(`http://hotels:3002/hoteles/${id_hotel}`);
         return response.data && Object.keys(response.data).length > 0;
         // true si la API devolvió datos, false si no
     } catch (error) {
@@ -281,7 +281,7 @@ async function existeHotel(id_hotel) {
 // Verificar que el usuario sea cliente
 async function clienteUsuario(id_usuario) {
     try {
-        const response = await axios.get(`http://localhost:3001/usuarios/${id_usuario}`);
+        const response = await axios.get(`http://users:3001/usuarios/${id_usuario}`);
         const usuario = response.data;
 
 

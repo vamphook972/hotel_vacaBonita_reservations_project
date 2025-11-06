@@ -319,7 +319,7 @@ router.delete('/reservations/:id', async (req, res) => {
         // If not the owner, check if user is admin of the hotel
         try {
             // Get hotel information to check admin
-            const hotelResponse = await axios.get(`http://localhost:3002/hoteles/${reservationData.id_hotel}`);
+            const hotelResponse = await axios.get(`http://hotels:3002/hoteles/${reservationData.id_hotel}`);
             const hotel = hotelResponse.data;
 
             // Check if requesting user is the hotel admin
@@ -348,7 +348,7 @@ router.delete('/reservations/:id', async (req, res) => {
 async function verifyUserName(userName) {
     try {
         // Make API call to user service to get user data
-        const userResponse = await axios.get(`http://localhost:3001/usuarios/${userName}`)
+        const userResponse = await axios.get(`http://users:3001/usuarios/${userName}`)
         const user = userResponse.data
         
         // Check if user exists and username matches
@@ -373,7 +373,7 @@ async function verifyUserName(userName) {
 async function verifyRoomById(id_room) {
     try {
         // Make API call to room service to get room data
-        const roomResponse = await axios.get(`http://localhost:3005/habitaciones/${id_room}`);
+        const roomResponse = await axios.get(`http://rooms:3005/habitaciones/${id_room}`);
         const room = roomResponse.data;
 
         // Check if room exists
@@ -396,7 +396,7 @@ async function verifyRoomById(id_room) {
 // Verifica que el hotel esté activo en el microservicio de hoteles
 async function verifyHotelState(id_hotel) {
     try {
-        const response = await axios.get(`http://localhost:3002/hoteles/${id_hotel}`);
+        const response = await axios.get(`http://hotels:3002/hoteles/${id_hotel}`);
         const hotel = response.data;
 
         if (!hotel) {
@@ -431,7 +431,7 @@ async function verifyDisponibility(id_room, start_date, end_date) {
         }
 
         // Get room information
-        const roomResponse = await axios.get(`http://localhost:3005/habitaciones/${id_room}`);
+        const roomResponse = await axios.get(`http://rooms:3005/habitaciones/${id_room}`);
         const room = roomResponse.data;
 
         // Get all existing reservations
@@ -466,7 +466,7 @@ async function verifyOcupantsInRoom(id_room, occupants_number) {
         }
 
         // Get room information to check capacity
-        const roomResponse = await axios.get(`http://localhost:3005/habitaciones/${id_room}`);
+        const roomResponse = await axios.get(`http://rooms:3005/habitaciones/${id_room}`);
         const room = roomResponse.data;
 
         // Check if number of occupants is within room capacity
@@ -486,7 +486,7 @@ async function verifyOcupantsInRoom(id_room, occupants_number) {
 async function extractHotel(id_room) {
     try {
         // Get room information to extract hotel ID
-        const roomResponse = await axios.get(`http://localhost:3005/habitaciones/${id_room}`);
+        const roomResponse = await axios.get(`http://rooms:3005/habitaciones/${id_room}`);
         const room = roomResponse.data;
 
         return room.id_hotel;
@@ -501,7 +501,7 @@ async function extractHotel(id_room) {
 async function updateStateRoom(id_room, state){
     try {
         // Update room state to occupied via API call
-        const roomResponse = await axios.put(`http://localhost:3005/habitaciones/${id_room}`, {
+        const roomResponse = await axios.put(`http://rooms:3005/habitaciones/${id_room}`, {
             estado: state
         });
     } catch (error) {
@@ -558,7 +558,7 @@ async function checkExpiredReservations() {
 async function calculateCost(id_room, start_date, end_date) {
     try {
         // Get room information to access room price
-        const roomResponse = await axios.get(`http://localhost:3005/habitaciones/${id_room}`);
+        const roomResponse = await axios.get(`http://rooms:3005/habitaciones/${id_room}`);
         const room = roomResponse.data;
 
         // Calculate number of nights between check-in and check-out
