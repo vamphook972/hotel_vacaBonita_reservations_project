@@ -5,7 +5,7 @@ WORKDIR /reviews
 
 COPY controllers /reviews/src/controllers
 COPY models /reviews/src/models
-COPY index.js /reviews
+COPY index.js /reviews/src/
 
 RUN npm init --yes
 RUN npm install express morgan mysql mysql2 axios
