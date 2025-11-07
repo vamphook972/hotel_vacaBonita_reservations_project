@@ -3,10 +3,11 @@ const mysql = require('mysql2/promise');
 
 
 const conection = mysql.createPool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.MYSQL_ROOT_PASSWORD,
-    database: process.env.MYSQL_DATABASE
+  host: 'db',
+  user: 'root',
+  password: 'mysql',
+  port: '3306',
+  database: 'agencia'
 });
 
 
