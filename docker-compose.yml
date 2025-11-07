@@ -85,7 +85,7 @@ services:
       - MYSQL_DATABASE=agencia
     volumes:
       - db_data:/var/lib/mysql
-      - /home/vagrant/hotel_vacaBonita_reservations_project/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - /vagrant/db/init.sql:/docker-entrypoint-initdb.d/init.sql
     deploy:
       placement:
         constraints:
