@@ -63,7 +63,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.hostname == servidorUbuntu1
+          - node.hostname == servidorUbuntu3
     depends_on:
       - users
       - hotels
@@ -107,6 +107,6 @@ services:
     deploy:
       placement:
         constraints:
-          - node.hostname == servidorUbuntu3
+          - node.hostname == servidorUbuntu1
 volumes:
   db_data:
