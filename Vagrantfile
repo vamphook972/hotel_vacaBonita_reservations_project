@@ -22,7 +22,7 @@ Vagrant.configure("2") do |config|
     servidorUbuntu2.vm.box_download_insecure=true
 
     ## Provisioning scripts
-    servidorUbuntu3.vm.provision "shell", path: "scripts/provision_docker.sh"
+    servidorUbuntu2.vm.provision "shell", path: "scripts/provision_docker.sh"
   end
   config.vm.define :servidorUbuntu3 do |servidorUbuntu3|
     servidorUbuntu3.vm.box = "bento/ubuntu-22.04"
