@@ -1,5 +1,23 @@
 version: '3'
 services:
+  haproxy:
+    image: haproxy:2.8
+    ports:
+      - "8080:8080"
+    volumes:
+      - /vagrant/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    depends_on:
+      - microWeb
+      - users
+      - hotels
+      - reservations
+      - reviews
+      - rooms
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == servidorUbuntu2
+          
   microWeb:
     image: jparedeshub/microweb_proyecto:latest
     ports:
