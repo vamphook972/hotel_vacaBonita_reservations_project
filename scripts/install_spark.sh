@@ -19,8 +19,8 @@ EOF
 
 source /etc/profile.d/jdk18.sh
 
-wget https://dlcdn.apache.org/spark/spark-3.5.7/spark-3.5.7-bin-hadoop3.tgz
+wget https://dlcdn.apache.org/spark/spark-3.5.7/spark-3.5.7-bin-hadoop3.tgz /home/vagrant/
 
-tar -xvzf /home/vagrant/spark-3.5.1-bin-hadoop3.tgz
+tar -xvzf /home/vagrant/spark-3.5.7-bin-hadoop3.tgz
 
-rm spark-3.5.1-bin-hadoop3.tgz
+rm spark-3.5.7-bin-hadoop3.tgz
