@@ -26,9 +26,9 @@ Vagrant.configure("2") do |config|
     servidorUbuntu2.vm.provision "shell", path: "scripts/provision_docker.sh"
     servidorUbuntu2.vm.provision "shell", path: "scripts/install_spark.sh"
   end
-    config.vm.define :servidorUbuntu3 do |servidorUbuntu3|
+  config.vm.define :servidorUbuntu3 do |servidorUbuntu3|
     servidorUbuntu3.vm.box = "bento/ubuntu-22.04"
-    servidorUbuntu3.vm.network :private_network, ip: "192.168.100.3"
+    servidorUbuntu3.vm.network :private_network, ip: "192.168.100.4"
     servidorUbuntu3.vm.hostname = "servidorUbuntu3"
     servidorUbuntu3.vm.box_download_insecure=true
 
