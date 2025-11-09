@@ -4,7 +4,7 @@ session_start();
 // Verificar sesión de usuario
 if (!isset($_SESSION['usuario'])) {
     header("Location: index.php");
-    exit;
+    exit();
 }
 
 $mensaje = null;
@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             "cantidad_habitaciones" => $cantidad_habitaciones
         ];
 
-        $API_URL = "http://dns.vacabonita.com:3002/hoteles";
+        $API_URL = "http://hotels:3002/hoteles";
 
         // --- USANDO CURL ---
         $ch = curl_init($API_URL);

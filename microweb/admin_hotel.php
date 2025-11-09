@@ -7,7 +7,7 @@ if (!isset($_SESSION['usuario']) || $_SESSION['tipo_usuario'] !== 'admin_hotel')
     exit();
 }
 
-$API_URL = "http://dns.vacabonita.com:3002/hoteles/usuario/" . $_SESSION['usuario']; 
+$API_URL = "http://hotels:3002/hoteles/usuario/" . $_SESSION['usuario']; 
 $hoteles = [];
 $error = "";
 

@@ -1,5 +1,12 @@
 <?php
-// Ver reseñas de un hotel específico
+session_start();
+
+// Verificar si hay usuario logueado
+if (!isset($_SESSION['usuario'])) {
+    header("Location: index.php");
+    exit();
+}
+
 $reseñas = [];
 $promedios = null;
 $error = null;
@@ -8,7 +15,7 @@ if (isset($_GET['id_hotel'])) {
     $id_hotel = intval($_GET['id_hotel']); // seguridad
 
     // --- Obtener reseñas ---
-    $API_RESEÑAS = "http://dns.vacabonita.com:3004/resenas/hotel/" . $id_hotel;
+    $API_RESEÑAS = "http://reviews:3004/resenas/hotel/" . $id_hotel;
     $response = @file_get_contents($API_RESEÑAS);
 
     if ($response !== FALSE) {
@@ -18,7 +25,7 @@ if (isset($_GET['id_hotel'])) {
     }
 
     // --- Obtener promedios ---
-    $API_PROMEDIOS = "http://dns.vacabonita.com:3004/resenas/promedios/" . $id_hotel;
+    $API_PROMEDIOS = "http://reviews:3004/resenas/promedios/" . $id_hotel;
     $promResponse = @file_get_contents($API_PROMEDIOS);
 
     if ($promResponse !== FALSE) {

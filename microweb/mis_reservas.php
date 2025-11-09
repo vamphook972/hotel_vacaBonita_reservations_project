@@ -4,13 +4,13 @@ session_start();
 // Verificar si el usuario ha iniciado sesión y es cliente
 if (!isset($_SESSION['usuario']) || $_SESSION['tipo_usuario'] !== 'cliente') {
     header("Location: index.php");
-    exit;
+    exit();
 }
 
 $usuario = $_SESSION['usuario'];
 
 // URL del microservicio de reservas
-$API_URL = "http://dns.vacabonita.com:3003/reservations/user/" . urlencode($usuario);
+$API_URL = "http://reservations:3003/reservations/user/" . urlencode($usuario);
 
 $reservas = [];
 $error = null;

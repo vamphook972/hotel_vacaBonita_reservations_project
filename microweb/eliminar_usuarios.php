@@ -1,12 +1,19 @@
 <?php
-// eliminar_usuario.php
+session_start();
+
+// Verifica si el usuario está logueado y es administrador de agencia
+if (!isset($_SESSION['usuario']) || $_SESSION['tipo_usuario'] !== 'admin_agencia') {
+    header("Location: index.php");
+    exit();
+}
+
 $error = null;
 $mensaje = null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!empty($_POST['usuario'])) {
         $usuario = urlencode(trim($_POST['usuario']));
-        $API_URL = "http://dns.vacabonita.com:3001/usuarios/" . $usuario; // Ajusta el puerto a tu microservicio
+        $API_URL = "http://users:3001/usuarios/" . $usuario; // Ajusta el puerto a tu microservicio
 
         // Preparar el DELETE request
         $options = [

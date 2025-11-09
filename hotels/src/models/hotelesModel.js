@@ -1,13 +1,14 @@
 require('dotenv').config();
 const mysql = require('mysql2/promise');
 
-
 const conection = mysql.createPool({
-  host: process.env.DB_HOST_HOTELS,
-  user: process.env.DB_USER_HOTELS,
-  password: process.env.DB_PASSWORD_HOTELS,
-  database: process.env.DB_NAME_HOTELS
+  host: 'db',
+  user: 'root',
+  password: 'mysql',
+  port: '3306',
+  database: 'agencia'
 });
+
 // Consultar todos los hoteles
 async function traerHoteles() {
   const [rows] = await conection.query('SELECT * FROM hoteles');

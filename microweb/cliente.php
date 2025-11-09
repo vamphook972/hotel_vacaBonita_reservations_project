@@ -8,7 +8,7 @@ if (!isset($_SESSION['usuario'])) {
 }
 
 // Consumir API de hoteles SOLO en estado activo
-$API_URL = "http://dns.vacabonita.com:3002/hoteles/estado/activo"; 
+$API_URL = "http://hotels:3002/hoteles/estado/activo"; 
 $hoteles = [];
 
 $response = @file_get_contents($API_URL);

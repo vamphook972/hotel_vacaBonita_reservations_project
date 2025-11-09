@@ -3,37 +3,38 @@ const mysql = require('mysql2/promise');
 
 
 const conection = mysql.createPool({
-  host: process.env.DB_HOST_REVIEWS,
-  user: process.env.DB_USER_REVIEWS,
-  password: process.env.DB_PASSWORD_REVIEWS,
-  database: process.env.DB_NAME_REVIEWS
+  host: 'db',
+  user: 'root',
+  password: 'mysql',
+  port: '3306',
+  database: 'agencia'
 });
 
 
 // Ver reseñas
 async function traerresenas() {
-    const result = await conection.query('SELECT * FROM reseñas_hoteles');
+    const result = await conection.query('SELECT * FROM resenas_hoteles');
     return result[0];
 }
 
 
 // Traer reseñas de un usuario
 async function traerReseñaUsuario(usuario) {
-    const result = await conection.query('SELECT * FROM reseñas_hoteles WHERE usuario = ?', usuario);
+    const result = await conection.query('SELECT * FROM resenas_hoteles WHERE usuario = ?', usuario);
     return result[0];
 }
 
 
 // Traer reseñas de un hotel
 async function traerReseñaHotel(id_hotel) {
-    const result = await conection.query('SELECT * FROM reseñas_hoteles WHERE id_hotel = ?', [id_hotel]);
+    const result = await conection.query('SELECT * FROM resenas_hoteles WHERE id_hotel = ?', [id_hotel]);
     return result[0];
 }
 
 
 // Traer reseñas de un hotel
 async function traerReseñaHotelNombre(nombre_hotel) {
-    const result = await conection.query('SELECT * FROM reseñas_hoteles WHERE nombre_hotel = ?', [nombre_hotel]);
+    const result = await conection.query('SELECT * FROM resenas_hoteles WHERE nombre_hotel = ?', [nombre_hotel]);
     return result[0];
 }
 
@@ -54,7 +55,7 @@ async function crearReseña(reseña) {
 
     try {
         const result = await conection.query(
-            `INSERT INTO reseñas_hoteles
+            `INSERT INTO resenas_hoteles
             (usuario, id_hotel, nombre_hotel, numero_estrellas, comentario, puntaje_limpieza, puntaje_facilidades, puntaje_comodidades)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
             [
@@ -86,7 +87,7 @@ async function calcularPromedioHotel(id_hotel) {
             ROUND(AVG(puntaje_limpieza),1) AS promedio_limpieza,
             ROUND(AVG(puntaje_facilidades),1) AS promedio_facilidades,
             ROUND(AVG(puntaje_comodidades),1) AS promedio_comodidades
-        FROM reseñas_hoteles
+        FROM resenas_hoteles
         WHERE id_hotel = ?`,
         [id_hotel]
     );
@@ -105,7 +106,7 @@ async function calcularPromedioHotel(id_hotel) {
 
 // Borrar reseñas
 async function borrarReseña(id) {
-    const result = await conection.query('DELETE FROM reseñas_hoteles WHERE id = ?', id);
+    const result = await conection.query('DELETE FROM resenas_hoteles WHERE id = ?', id);
     return result[0].affectedRows > 0;
 }
 

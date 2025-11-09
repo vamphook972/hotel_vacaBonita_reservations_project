@@ -1,9 +1,15 @@
 <?php
-// hotel_habitaciones.php
-// Obtener el id del hotel desde la URL
+session_start();
+
+// Verificar si hay usuario logueado
+if (!isset($_SESSION['usuario'])) {
+    header("Location: index.php");
+    exit();
+}
+
 $id_hotel = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
-$API_URL = "http://dns.vacabonita.com:3005/habitacionesHotel/$id_hotel";
+$API_URL = "http://rooms:3005/habitacionesHotel/$id_hotel";
 $response = @file_get_contents($API_URL);
 
 if ($response !== FALSE) {

@@ -2,10 +2,11 @@ require('dotenv').config();
 const mysql = require('mysql2/promise');
 
 const conection = mysql.createPool({
-  host: process.env.DB_HOST_ROOMS,
-  user: process.env.DB_USER_ROOMS,
-  password: process.env.DB_PASSWORD_ROOMS,
-  database: process.env.DB_NAME_ROOMS
+  host: 'db',
+  user: 'root',
+  password: 'mysql',
+  port: '3306',
+  database: 'agencia'
 });
 
 async function traerHabitaciones() {
