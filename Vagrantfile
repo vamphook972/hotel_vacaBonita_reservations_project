@@ -14,6 +14,7 @@ Vagrant.configure("2") do |config|
 
     ## Provisioning scripts
     servidorUbuntu1.vm.provision "shell", path: "scripts/provision_docker.sh"
+    servidorUbuntu1.vm.provision "shell", path: "scripts/install_spark.sh"
   end
   config.vm.define :servidorUbuntu2 do |servidorUbuntu2|
     servidorUbuntu2.vm.box = "bento/ubuntu-22.04"
@@ -23,5 +24,16 @@ Vagrant.configure("2") do |config|
 
     ## Provisioning scripts
     servidorUbuntu2.vm.provision "shell", path: "scripts/provision_docker.sh"
+    servidorUbuntu2.vm.provision "shell", path: "scripts/install_spark.sh"
+  end
+    config.vm.define :servidorUbuntu3 do |servidorUbuntu3|
+    servidorUbuntu3.vm.box = "bento/ubuntu-22.04"
+    servidorUbuntu3.vm.network :private_network, ip: "192.168.100.3"
+    servidorUbuntu3.vm.hostname = "servidorUbuntu3"
+    servidorUbuntu3.vm.box_download_insecure=true
+
+    ## Provisioning scripts
+    servidorUbuntu3.vm.provision "shell", path: "scripts/provision_docker.sh"
+    servidorUbuntu3.vm.provision "shell", path: "scripts/install_spark.sh"
   end
 end
