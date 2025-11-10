@@ -94,7 +94,7 @@ if ($response !== FALSE) {
     if (!confirm("¿Deseas pagar y confirmar esta reserva?")) return;
 
     try {
-      const response = await fetch(`http://dns.vacabonita.com:3003/reservations/${id}/state`, {
+      const response = await fetch(`http://reservations:3003/reservations/${id}/state`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json"
