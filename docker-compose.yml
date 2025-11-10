@@ -109,5 +109,22 @@ services:
       placement:
         constraints:
           - node.hostname == servidorUbuntu1
+
+  grafana:
+    image: grafana/grafana:11.1.0
+    ports:
+      - "3000:3000"
+    volumes:
+      - /vagrant/dataset/resultados_proyecto:/var/lib/grafana/data
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == servidorUbuntu2
+
 volumes:
   db_data:
+  grafana_data:

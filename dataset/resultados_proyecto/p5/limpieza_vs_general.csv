@@ -1,0 +1,21 @@
+hotel_name,city,country_y,diff_cleanliness
+Kyo-to Grand,Tokyo,Japan,0.9
+Nile Grandeur,Cairo,Egypt,0.9
+Canal House Grand,Amsterdam,Netherlands,0.7
+The Bund Palace,Shanghai,China,0.7
+Copacabana Lux,Rio de Janeiro,Brazil,0.4
+Berlin Mitte Elite,Berlin,Germany,0.3
+The Golden Oasis,Dubai,United Arab Emirates,0.3
+Colosseum Gardens,Rome,Italy,0.2
+Sydney Harbour Grand,Sydney,Australia,0.2
+The Royal Compass,London,United Kingdom,0.2
+The Savannah House,Lagos,Nigeria,0.2
+Gaudi's Retreat,Barcelona,Spain,0.1
+The Bosphorus Inn,Istanbul,Turkey,0.1
+The Maple Grove,Toronto,Canada,0.1
+Han River Oasis,Seoul,South Korea,0.0
+Tango Boutique,Buenos Aires,Argentina,-0.1
+The Azure Tower,New York,United States,-0.1
+The Orchid Palace,Bangkok,Thailand,-0.1
+Kremlin Suites,Moscow,Russia,-0.2
+L'Étoile Palace,Paris,France,-0.2
