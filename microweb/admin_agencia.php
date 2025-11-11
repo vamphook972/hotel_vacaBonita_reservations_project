@@ -44,6 +44,7 @@ if ($response === FALSE || $httpcode !== 200) {
     <header class="bg-indigo-700 text-white p-4 flex justify-between items-center shadow-md">
         <h1 class="text-xl font-bold">Agencia Vaca Bonita - Administrador de la Agencia</h1>
         <nav class="space-x-6">
+            <a href="graficos.php" class="hover:underline">Ver estadísticas</a>
             <a href="usuarios_info.php" class="hover:underline">Ver información de usuarios</a>
             <a href="cambiar_contraseña_agencia.php" class="hover:underline">Cambiar contraseña</a>
             <a href="eliminar_usuarios.php" class="hover:underline">Eliminar usuarios</a>
