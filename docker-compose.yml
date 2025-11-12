@@ -1,9 +1,30 @@
 version: '3'
 services:
+  haproxy:
+    image: haproxy:2.8
+    ports:
+      - "8080:8080"   # Proxy web
+      - "8404:8404"   # Panel de estadísticas
+    volumes:
+      - /vagrant/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    depends_on:
+      - microWeb
+      - users
+      - hotels
+      - reservations
+      - reviews
+      - rooms
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == servidorUbuntu2
+          
   microWeb:
     image: jparedeshub/microweb_proyecto:latest
     ports:
       - "8181:80"
+    volumes:
+      - /vagrant/dataset:/var/www/html/dataset 
     deploy:
       placement:
         constraints:
@@ -45,7 +66,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.hostname == servidorUbuntu1
+          - node.hostname == servidorUbuntu3
     depends_on:
       - users
       - hotels
@@ -58,7 +79,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.hostname == servidorUbuntu1
+          - node.hostname == servidorUbuntu3
     depends_on:
       - users
       - hotels
@@ -71,7 +92,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.hostname == servidorUbuntu1
+          - node.hostname == servidorUbuntu3
     depends_on:
       - hotels
       - db
@@ -85,10 +106,11 @@ services:
       - MYSQL_DATABASE=agencia
     volumes:
       - db_data:/var/lib/mysql
-      - /home/vagrant/hotel_vacaBonita_reservations_project/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - /vagrant/db/init.sql:/docker-entrypoint-initdb.d/init.sql
     deploy:
       placement:
         constraints:
           - node.hostname == servidorUbuntu1
+
 volumes:
   db_data:
