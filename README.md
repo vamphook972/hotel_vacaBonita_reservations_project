@@ -124,12 +124,17 @@ docker stack deploy -c docker-compose.yml stack_hotel_vacaBonita
 docker service ls
 ```
 
+<img width="1275" height="153" alt="image" src="https://github.com/user-attachments/assets/e52faf0c-4276-4299-a577-75ab070aefdd" />
+
+
 #### Web project
 Go to web and search
 ```
 http://192.168.100.3:8080
 ```
 You will see somenthing like this:
+
+<img width="1280" height="858" alt="image" src="https://github.com/user-attachments/assets/03f408e3-9cd7-4f06-944e-21beda8772ea" />
 
 
 #### Haproxy
@@ -140,11 +145,14 @@ http://192.168.100.3:8404/haproxy?stats
 ```
 **user**: admin
 
-**pasword**: admin
+**pasword**: admin123
 
 ---
 
 You will see somenthing like this:
+
+<img width="1280" height="643" alt="image" src="https://github.com/user-attachments/assets/6cc75958-8ce0-492a-9a8f-27af4b2d0b5f" />
+
 
 #### 
 
@@ -160,21 +168,31 @@ We used 3 diferents machines to the cluster:
 We recomend to have 3 terminals open to run the comands, in fact we specify which machine need each comand
 
 
-### 1) start spark cluster
-#### start master
+### 1) Start spark cluster
+#### Start master
 **-servidorUbuntu2**
 ```bash
-cd labSpark/spark-3.5.0-bin-hadoop3/sbin/
+cd ~/spark-3.5.0-bin-hadoop3/sbin/
 ```
 
 ```bash
 ./start-master.sh
 ```
 
-#### start workers
+#### Start workers
+**-servidorUbuntu1**
+```bash
+cd ~/spark-3.5.0-bin-hadoop3/sbin/
+```
+
 **-servidorUbuntu1**
 ```bash
 ./start-worker.sh spark://192.168.100.3:7077
+```
+---
+**-servidorUbuntu3**
+```bash
+cd ~/spark-3.5.0-bin-hadoop3/sbin/
 ```
 
 **-servidorUbuntu3**
@@ -182,8 +200,34 @@ cd labSpark/spark-3.5.0-bin-hadoop3/sbin/
 ./start-worker.sh spark://192.168.100.3:7077
 ```
 
-### 2) run distributed analysis
+### 2) Run distributed analysis
+first remove the old analysis in order to do not have problems
+**servidorUbuntu2**
+```bash
+sudo rm -rf /vagrant/dataset/resultados_projecto
+```
+
 **-servidorUbuntu2**
 ```bash
-./spark-submit --master spark://192.168.100.3:7077 /home/vagrant/labSpark/dataset_proyecto/app_hotel_analytics.py
+./spark-submit --master spark://servidorUbuntu2:7077 /vagrant/dataset/app_hotel_analytics.py
 ```
+
+#### 3) Check
+- Go to web and search
+```
+http://192.168.100.3:8080
+```
+
+- Create an agency admin (Administrador agencia)
+<img width="889" height="860" alt="image" src="https://github.com/user-attachments/assets/b451f155-27ee-4e4d-adc3-aced8402e333" />
+
+---
+- Go to "ver estadisticas"
+<img width="1280" height="407" alt="image" src="https://github.com/user-attachments/assets/36b79c26-a46f-46e4-86af-d68cd8fe13bd" />
+
+---
+- If everything is working you will see something like this:
+<img width="1022" height="871" alt="image" src="https://github.com/user-attachments/assets/61455175-4bf0-4507-b7d0-c99aeb33c1ad" />
+
+
+
