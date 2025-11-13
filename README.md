@@ -170,44 +170,45 @@ We recomend to have 3 terminals open to run the comands, in fact we specify whic
 
 ### 1) Start spark cluster
 #### Start master
-**-servidorUbuntu2**
+**- servidorUbuntu2**
 ```bash
-cd ~/spark-3.5.0-bin-hadoop3/sbin/
+cd ~/spark-3.5.7-bin-hadoop3/sbin
 ```
 
 ```bash
-./start-master.sh
-```
-
-#### Start workers
-**-servidorUbuntu1**
-```bash
-cd ~/spark-3.5.0-bin-hadoop3/sbin/
-```
-
-**-servidorUbuntu1**
-```bash
-./start-worker.sh spark://192.168.100.3:7077
+sudo ./start-master.sh
 ```
 ---
-**-servidorUbuntu3**
+#### Start workers
+**- servidorUbuntu1**
 ```bash
-cd ~/spark-3.5.0-bin-hadoop3/sbin/
+cd ~/spark-3.5.7-bin-hadoop3/sbin
 ```
 
-**-servidorUbuntu3**
+**- servidorUbuntu1**
 ```bash
-./start-worker.sh spark://192.168.100.3:7077
+sudo ./start-worker.sh spark://192.168.100.3:7077
+```
+---
+**- servidorUbuntu3**
+```bash
+cd ~/spark-3.5.7-bin-hadoop3/sbin
+```
+
+**- servidorUbuntu3**
+```bash
+sudo ./start-worker.sh spark://192.168.100.3:7077
 ```
 
 ### 2) Run distributed analysis
 first remove the old analysis in order to do not have problems
-**servidorUbuntu2**
+
+**- servidorUbuntu2**
 ```bash
 sudo rm -rf /vagrant/dataset/resultados_projecto
 ```
 
-**-servidorUbuntu2**
+**- servidorUbuntu2**
 ```bash
 ./spark-submit --master spark://servidorUbuntu2:7077 /vagrant/dataset/app_hotel_analytics.py
 ```
