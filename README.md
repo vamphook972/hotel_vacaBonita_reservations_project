@@ -189,7 +189,7 @@ first remove the old analysis in order to do not have problems
 
 **- servidorUbuntu2**
 ```bash
-sudo rm -rf /vagrant/dataset/resultados_projecto
+sudo rm -rf /vagrant/dataset/resultados_proyecto
 ```
 ```bash
 cd ~/spark-3.5.7-bin-hadoop3/bin/
