@@ -49,8 +49,7 @@ The web interface (microweb) runs on PHP and consumes the REST APIs from the mic
 ├── docker-compose.yml     # Orchestration configuration
 └── Vagrantfile            # Virtual machines configuration
 ```
-
-## Steps for project implementation
+## Steps for start machines
 We used 3 diferents machines to the cluster:
 
 ```
@@ -93,8 +92,8 @@ vagrant ssh servidorUbuntu3
 ```bash
 cd /vagrant
 ```
-
-### 3) Start docker swarm cluster
+## Steps for project implementation
+### 1) Start docker swarm cluster
 #### Start master
 **- servidorUbuntu2**
 ```bash
@@ -111,26 +110,27 @@ docker swarm join --token "token" 192.168.100.3:2377
 docker swarm join --token "token" 192.168.100.3:2377
 ```
 
-### 4) Deploy container services
+### 2) Deploy container services
 **- servidorUbuntu2**
 ```bash
 docker stack deploy -c docker-compose.yml stack_hotel_vacaBonita
 ```
 
-### 5) Check
+### 3) Check
 #### Docker services
 **- servidorUbuntu2**
 ```bash
 docker service ls
 ```
 
-<img width="1275" height="153" alt="image" src="https://github.com/user-attachments/assets/e52faf0c-4276-4299-a577-75ab070aefdd" />
+<img width="1562" height="218" alt="image" src="https://github.com/user-attachments/assets/1c8550ed-3580-4df0-8dcb-2b76b84b4df5" />
+
 
 
 #### Web project
 Go to web and search
 ```
-http://192.168.100.3:8080
+http://192.168.100.3:8282
 ```
 You will see somenthing like this:
 
@@ -157,17 +157,6 @@ You will see somenthing like this:
 #### 
 
 ## Steps for distributed analysis
-We used 3 diferents machines to the cluster:
-
-```
-├── ubuntuServer1 --> (worker)
-├── ubuntuServer2 --> (master)
-├── ubuntuServer3 --> (worker)
-```
-
-We recomend to have 3 terminals open to run the comands, in fact we specify which machine need each comand
-
-
 ### 1) Start spark cluster
 #### Start master
 **- servidorUbuntu2**
@@ -184,18 +173,13 @@ sudo ./start-master.sh
 ```bash
 cd ~/spark-3.5.7-bin-hadoop3/sbin
 ```
-
-**- servidorUbuntu1**
 ```bash
 sudo ./start-worker.sh spark://192.168.100.3:7077
 ```
----
 **- servidorUbuntu3**
 ```bash
 cd ~/spark-3.5.7-bin-hadoop3/sbin
 ```
-
-**- servidorUbuntu3**
 ```bash
 sudo ./start-worker.sh spark://192.168.100.3:7077
 ```
@@ -207,28 +191,37 @@ first remove the old analysis in order to do not have problems
 ```bash
 sudo rm -rf /vagrant/dataset/resultados_projecto
 ```
-
-**- servidorUbuntu2**
 ```bash
-./spark-submit --master spark://servidorUbuntu2:7077 /vagrant/dataset/app_hotel_analytics.py
+cd ~/spark-3.5.7-bin-hadoop3/bin/
+```
+```bash
+./spark-submit --master spark://192.168.100.3:7077 /vagrant/dataset/app_hotel_analytics.py
 ```
 
 #### 3) Check
-- Go to web and search
+
+- Spark service
+Go to web and search
 ```
 http://192.168.100.3:8080
 ```
+<img width="1434" height="788" alt="image" src="https://github.com/user-attachments/assets/6fbde144-9253-4077-ab19-f280c2d4d54c" />
 
-- Create an agency admin (Administrador agencia)
+
+
+- see analytics 
+Go to web and search
+```
+http://192.168.100.3:8282
+```
+
+Create an agency admin (Administrador agencia)
 <img width="889" height="860" alt="image" src="https://github.com/user-attachments/assets/b451f155-27ee-4e4d-adc3-aced8402e333" />
 
 ---
-- Go to "ver estadisticas"
+Go to "ver estadisticas"
 <img width="1280" height="407" alt="image" src="https://github.com/user-attachments/assets/36b79c26-a46f-46e4-86af-d68cd8fe13bd" />
 
 ---
-- If everything is working you will see something like this:
+If everything is working you will see something like this:
 <img width="1022" height="871" alt="image" src="https://github.com/user-attachments/assets/61455175-4bf0-4507-b7d0-c99aeb33c1ad" />
-
-
-
