@@ -19,20 +19,16 @@ df = spark.read.options(header=True, inferSchema=True) \
 
 # Función para guardar DataFrame temporalmente y renombrar CSV
 def save_and_rename(df, folder, new_name):
-    temp_output = f"/tmp/{folder}"
+    temp_output = f"/vagrant/dataset/resultados_proyecto/tmp_{folder}"
     final_output = f"/vagrant/dataset/resultados_proyecto/{folder}"
 
-    # Guardar temporalmente en /tmp
     df.coalesce(1).write.mode("overwrite").csv(temp_output, header=True)
 
-    # Crear carpeta final si no existe
     os.makedirs(final_output, exist_ok=True)
 
-    # Mover y renombrar el CSV generado
     file = glob.glob(f"{temp_output}/part-*.csv")[0]
     shutil.move(file, f"{final_output}/{new_name}.csv")
 
-    # Eliminar carpeta temporal
     shutil.rmtree(temp_output, ignore_errors=True)
 
 # 1. Top 10 hoteles con más reseñas
