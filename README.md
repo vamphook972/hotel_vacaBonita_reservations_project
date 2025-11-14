@@ -205,6 +205,7 @@ Go to web and search
 ```
 http://192.168.100.3:8080
 ```
+
 <img width="1434" height="788" alt="image" src="https://github.com/user-attachments/assets/6fbde144-9253-4077-ab19-f280c2d4d54c" />
 
 
@@ -216,12 +217,15 @@ http://192.168.100.3:8282
 ```
 
 Create an agency admin (Administrador agencia)
+
 <img width="889" height="860" alt="image" src="https://github.com/user-attachments/assets/b451f155-27ee-4e4d-adc3-aced8402e333" />
 
 ---
 Go to "ver estadisticas"
+
 <img width="1280" height="407" alt="image" src="https://github.com/user-attachments/assets/36b79c26-a46f-46e4-86af-d68cd8fe13bd" />
 
 ---
 If everything is working you will see something like this:
+
 <img width="1022" height="871" alt="image" src="https://github.com/user-attachments/assets/61455175-4bf0-4507-b7d0-c99aeb33c1ad" />
